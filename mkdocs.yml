@@ -1,4 +1,9 @@
 site_name: Documentation Pendule Furuta
+site_url: https://heig-vd-iai.github.io/pendule-furuta-doc
+
+repo_name: heig-vd-iai/pendule-furuta-doc
+repo_url: https://github.com/heig-vd-iai/pendule-furuta-doc
+
 theme:
   name: material
   language: fr
@@ -24,6 +29,8 @@ theme:
       toggle:
         icon: material/lightbulb-outline
         name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
 
 markdown_extensions:
   - footnotes
