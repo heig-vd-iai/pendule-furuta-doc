@@ -1,4 +1,4 @@
-# Maquette de labo "Pendule de Furuta"
+# Introduction
 
 Le pendule de Furuta est un pendule inversé rotatif, inventé par Katsuhisa Furuta en 1992 au "Tokyo Institute of Technology". Il s'agit d'un système instable en mode inversé (Up), fortement nonlinéaire et sous-actionné (deux degrés de liberté, mais un seul actionneur). De nombreux laboratoires automatiques disposent de pendules de Furuta, pour l'enseignement et pour la recherche.
 A la HEIG-VD, lors d'un  [travail de Bachelor]("Philippe Krstev, "Développement d’un pendule de Furuta", TB HEIG-VD, 2024."), un prototype d'un pendule de Furuta a été réalisé en 2024, dans le but de l'affiner par la suite, de le dupliquer et de l'utiliser finalement comme nouvelle maquette de laboratoire.
