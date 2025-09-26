@@ -1,0 +1,37 @@
+site_name: Documentation Pendule Furuta
+theme:
+  name: material
+  language: fr
+  font:
+    text: Nunito
+  logo: https://raw.githubusercontent.com/HEIG-VD/logos/main/heig-vd/heig-vd-white.svg
+  features:
+    - content.tooltips
+  palette:
+    - scheme: default
+      media: "(prefers-color-scheme: light)"
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+      primary: red
+      accent: light blue
+    - scheme: slate
+      media: "(prefers-color-scheme: dark)"
+      primary: black
+      accent: lime
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+
+markdown_extensions:
+  - footnotes
+  - pymdownx.arithmatex:
+      generic: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  
