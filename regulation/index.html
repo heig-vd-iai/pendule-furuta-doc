@@ -1,0 +1,673 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../network/">
+      
+      
+        <link rel="next" href="../rpi5/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Régulation - Documentation Pendule Furuta</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Nunito";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#regulation" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href=".." title="Documentation Pendule Furuta" class="md-header__button md-logo" aria-label="Documentation Pendule Furuta" data-md-component="logo">
+      
+  <img src="https://raw.githubusercontent.com/HEIG-VD/logos/main/heig-vd/heig-vd-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Documentation Pendule Furuta
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Régulation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Documentation Pendule Furuta" class="md-nav__button md-logo" aria-label="Documentation Pendule Furuta" data-md-component="logo">
+      
+  <img src="https://raw.githubusercontent.com/HEIG-VD/logos/main/heig-vd/heig-vd-white.svg" alt="logo">
+
+    </a>
+    Documentation Pendule Furuta
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Maquette de labo "Pendule de Furuta"
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Conception
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../drive_elmo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Paramétrisation du drive ELMO
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Intégration dans le réseau HEIG-VD
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Régulation
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Régulation
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-de-regulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture de régulation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logiciel-de-regulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logiciel de régulation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelisation-et-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modélisation et identification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Modélisation et identification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modele-lineaire-simplifie" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modéle linéaire simplifié
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outils-de-simulation-matlab" class="md-nav__link">
+    <span class="md-ellipsis">
+      Outils de simulation Matlab
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rpi5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration du RPI5
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-de-regulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture de régulation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logiciel-de-regulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logiciel de régulation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelisation-et-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modélisation et identification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Modélisation et identification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modele-lineaire-simplifie" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modéle linéaire simplifié
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outils-de-simulation-matlab" class="md-nav__link">
+    <span class="md-ellipsis">
+      Outils de simulation Matlab
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="regulation">Régulation</h1>
+<h2 id="architecture-de-regulation">Architecture de régulation</h2>
+<p><img alt="alt text" src="../images/image-3.png" /></p>
+<ul>
+<li>
+<p>Le drive ELMO s'occupe de la commutation du moteur BLDC et de la régulation de courant, donc la régulation de couple. De surcroit, le drive ELMO interface les 2 capteurs incrémentaux, et calcule les vitesses de rotation. Le calcul des vitesses côté drive est moins bruitée, car le jitter de la période d'échantillonnage est très faible.</p>
+</li>
+<li>
+<p>La RPI5 communique avec le drive via CANopen, et lui communique la consigne de couple via des trames PDO. Le drive transmet au RPI5 les positions et vitesses des deux encodeurs incrémentaux.</p>
+</li>
+</ul>
+<h2 id="logiciel-de-regulation">Logiciel de régulation</h2>
+<p>La régulation du pendule s'effectue sur la RPI5 dans le langage de programmation Python. Ce choix a été motivé par le fait que nos étudiants ont plus d'expérience en Python que en C. Cela permet aussi une facilité de programmation.</p>
+<p>Evidemment Python ne permet pas d'atteindre le temps réel dur, et le jitter de la période d'échantillonnage est relativement élevé. Parfois, il y a même des coups d'horloge ratés. Ceci n'est pas trop grave, car la fréquence d'échantillonnage vaut 1 kHz, ce qui est très élevé par rapport à la dynamique de la maquette. Pour minimiser le problème du jitter, il faut <em>impérativement</em> lancer le programme de régulation en priorité maximale en utilisant la commande 
+<code>sudo chrt --fifo 99 xxxx.py</code>.</p>
+<p>L'horloge pour lancer périodiquement le code de la régulation provient du drive ELMO. La RPI5 configure à l'initialisation des PDO CANopen sur le drive. Ces PDO sont à une cadence de 1 ms. Le programme de régulation sur la RPI5 fait un polling et attend la réception de la trame CANopen. Il n'y a donc pas d'interruptions ou d'events, c'est simplement une boucle <em>while</em> qui attend l'arrivée des trames.</p>
+<h2 id="modelisation-et-identification">Modélisation et identification</h2>
+<p>La modélisation du pendule de Furuta est basée sur la publication [2], dans laquelle le formalisme de Lagrange est utilisé pour trouver les équations différentielles nonlinéaires. Rien que l'expression de l'énergie cinétique n'est pas évidente. Ensuite, une linéarisation autour du point d'équilibre "Up" ou "Down" est appliquée. Cette approche n'est pas à la portée de nos étudiants Bachelor, car il leur manque les bases mécaniques et mathématiques. C'est pour cela que c'est préférable d'expliquer aux étudiants la structure d'un modèle linéaire simplifié.</p>
+<h3 id="modele-lineaire-simplifie">Modéle linéaire simplifié</h3>
+<p>Avec les hypothèses simplificatrices suivantes
+a) Frottement et jeu mécanique négligeable
+b) Dynamique du drive négligeable
+c) Couple "cogging" du moteur négligeable
+d) Période d'échantillonnage négligeable
+e) Retards de transmission CANopen négligeables,
+on obtient un modèle linéaire simplifié en temps continu ayant la structure avec le schéma bloc suivant:
+<img alt="alt text" src="../images/image.png" /></p>
+<p>Ici, <span class="arithmatex">\(\tau(t)\)</span> est le signal d'entrée correspondant au couple appliqué au moteur, <span class="arithmatex">\(\theta_1(t)\)</span> est l'angle mesuré du moteur et <span class="arithmatex">\(\theta_2(t)\)</span> est l'angle mesuré du pendule.
+La structure des deux fonctions de transfert impliquées est la suivante :
+<span class="arithmatex">\(<span class="arithmatex">\(G_1(s) = \frac{k_1 (s^2 - z^2)}{s^2(s^2 - p^2)}\)</span>\)</span>et
+<span class="arithmatex">\(<span class="arithmatex">\(G_2(s) = \frac{k_2}{s^2 - p^2}\)</span>\)</span>
+ayant que quatre paramètres <span class="arithmatex">\(k_1, k_2, z\)</span> et <span class="arithmatex">\(p\)</span> à identifier.</p>
+<p>En mode "Down", <span class="arithmatex">\(p^2\)</span> et <span class="arithmatex">\(z^2\)</span> sont négatifs ce qui donne lieu à deux pôles <span class="arithmatex">\(jp, -jp\)</span> et deux zéros <span class="arithmatex">\(jz, -jz\)</span> purement imaginaires. En mode "Up", <span class="arithmatex">\(p^2\)</span> et <span class="arithmatex">\(z^2\)</span> sont positifs ce qui donne lieu à deux pôles <span class="arithmatex">\(p, -p\)</span> et deux zéros <span class="arithmatex">\(z, -z\)</span> réels, disposés symmétriquement par rapport à l'origine. La figure ci-dessous résume la configuration pôles-zéros de <span class="arithmatex">\(G_1(s)\)</span> pour les deux modes.
+<img alt="alt text" src="../images/image-1.png" /></p>
+<p>Le facteur <span class="arithmatex">\(s^2\)</span> au dénominateur de <span class="arithmatex">\(G_1(s)\)</span> traduit un comportement double-intégrateur. Si l'on applique un couple constant, le moteur va essentiellement accélérer. Le terme <span class="arithmatex">\(\frac{s^2-z^2}{s^2-p^2}\)</span> traduit le couple perturbateur exercé par le pendule sur le moteur. En mode "Down", <span class="arithmatex">\(p\)</span> correspond à une pulsation de résonance, et <span class="arithmatex">\(z\)</span> correspond à une pulsation d'anti-résonance.</p>
+<p>Le changement entre "Down" et "Up" se traduit simplement par un changement de signe de <span class="arithmatex">\(p^2\)</span>, <span class="arithmatex">\(z^2\)</span> et <span class="arithmatex">\(k_2\)</span>. Avec cette observation, on peut faire l'identification des quatre paramètres en mode "Down", ce qui est beaucoup plus facile, car le système à régler est stable. Puis ensuite, pour le modèle "Up", on peut simplement changer le signe des paramètres <span class="arithmatex">\(p^2\)</span>, <span class="arithmatex">\(z^2\)</span> et <span class="arithmatex">\(k_2\)</span>.</p>
+<p>L'identification et la mesure du diagramme de Bode présentent plusieurs difficultés:</p>
+<ul>
+<li>le comportement quasi double-intégrateur est fortement passe-bas et masque les effets à haute fréquence,</li>
+<li>l'anti-résonance et la résonance sont assez rapprochées, et il faudra une résolution fréquentielle élevée pour bien les visualiser,</li>
+<li>l'amortissement de l'anti-résonance et de la résonance est relativement faible, et le régime transitoire dure longtemps.</li>
+</ul>
+<p>C'est pour cette raison, une suite binaire pseudo-aléatoire comme signal d'excitation a été écartée. Comme alternative, un signal purement sinusoïdal est appliqué en mode "Down" sur le couple <span class="arithmatex">\(\tau(t)\)</span>, sans présence de régulateur. Ensuite,</p>
+<ul>
+<li>le régime harmonique établi est attendu,</li>
+<li>les signaux <span class="arithmatex">\(\theta_1(t)\)</span> et <span class="arithmatex">\(\theta_2(t)\)</span> sont mesurés sur un nombre entier de périodes,</li>
+<li>ces signaux sont projetés (produit scalaire) sur <span class="arithmatex">\(e^{-j\omega t}\)</span>. Ceci correspont à l'évaluation de la transformée en <span class="arithmatex">\(\cal{Z}\)</span> à une seule fréquence, et donne lieu à un nombre complexe</li>
+<li>le nombre complexe associé des sorties est divisé par celui de l'entrée</li>
+<li>la fréquence est incrémentée.</li>
+</ul>
+<p>Cette manière de faire permet un contrôle précis de la grille fréquentielle et des amplitudes d'excitation. Après, on peut comparer les diagrammes de Bode mesurés avec les diagrammes de Bode du modèle, et ajuster "manuellement" les quatre paramètres (et évtl. les taux d'amortissement) jusqu'au point où les diagrammes de Bode mesurés et simulés collent "au mieux". L'effet des paramètres sur les diagrammes de Bode est évident, et on n'a pas forcément besoin d'une méthode d'optimisation.</p>
+<p>Le diagramme de Bode de <span class="arithmatex">\(G_1(s)\)</span> p.ex. devrait ressembler au graphique ci-dessous.
+<img alt="alt text" src="../images/image-2.png" /></p>
+<h2 id="outils-de-simulation-matlab">Outils de simulation Matlab</h2>
+<p>Les outils suivants ont été développés :</p>
+<p><code>Modelling_Control_S.mlx</code>
+Il s'agit d'un Live script Matlab, dans lequel se trouve</p>
+<ul>
+<li>une estimation des paramètres physiques</li>
+<li>le calcul du modèle linéarisé pour les deux points d'équilibre "Up" et "Down".</li>
+<li>Le calcul du gain du retour d'état, soit avec placement de pôles ou bien par LQR.</li>
+<li>L'appel du fichier de Simulink qui contient un modèle nonlinéaire avec modélisation de défauts</li>
+</ul>
+<p><code>LinPlant = CalcLinPlant(J0_hat, J2_hat, m2, L1, l2, g, Mode)</code>
+La fonction <code>CalcLinPlant.m</code> calcule le modèle linéarisé dans l'espace d'état en fonction des paramètres physiques.</p>
+<p><code>Furuta_CL_Sim.slx</code>
+C'est un modèle Simulink <em>nonlinéaire</em> affiné de la boucle fermée, incluant l'effet de l'échantillonnage, estimation de vitesse, etc.</p>
+<p><code>[zsq, psq, k1, k2] = PhysPar2RedPar(J0_hat, J2_hat, m2, L1, l2, g, Mode)</code>
+La fonction <code>PhysPar2RedPar.m</code> calcule à partir des 6 paramètres physiques les 4 paramètres réduits.</p>
+<p><code>LinPlant = RedPar2ss(zsq, psq, k1, k2)</code>
+La fonction <code>RedPar2ss.m</code> calcule à partir des 4 paramètres réduits une représentation dans l'espace d'état.</p>
+<p>Il y a également des fichiers Python pour la simulation, mais ils sont moins élaborés que les fichiers Matlab/Simulink cités ci-dessus.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["content.tooltips"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
