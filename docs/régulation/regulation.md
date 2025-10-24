@@ -34,8 +34,11 @@ on obtient un modèle linéaire simplifié en temps continu ayant la structure a
 
 Ici, $\tau(t)$ est le signal d'entrée correspondant au couple appliqué au moteur, $\theta_1(t)$ est l'angle mesuré du moteur et $\theta_2(t)$ est l'angle mesuré du pendule.
 La structure des deux fonctions de transfert impliquées est la suivante :
-$$G_1(s) = \frac{k_1 (s^2 - z^2)}{s^2(s^2 - p^2)}$$et
+
+$$G_1(s) = \frac{k_1 (s^2 - z^2)}{s^2(s^2 - p^2)} \:\mbox{et}$$
+
 $$G_2(s) = \frac{k_2}{s^2 - p^2}$$
+
 ayant que quatre paramètres $k_1, k_2, z$ et $p$ à identifier.
 
 En mode "Down", $p^2$ et $z^2$ sont négatifs ce qui donne lieu à deux pôles $jp, -jp$ et deux zéros $jz, -jz$ purement imaginaires. En mode "Up", $p^2$ et $z^2$ sont positifs ce qui donne lieu à deux pôles $p, -p$ et deux zéros $z, -z$ réels, disposés symmétriquement par rapport à l'origine. La figure ci-dessous résume la configuration pôles-zéros de $G_1(s)$ pour les deux modes.
