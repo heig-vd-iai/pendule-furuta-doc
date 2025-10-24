@@ -838,10 +838,10 @@ e) Retards de transmission CANopen négligeables,
 on obtient un modèle linéaire simplifié en temps continu ayant la structure avec le schéma bloc suivant:
 <img alt="alt text" src="../../assets/images/schema_bloc_regulation.png" /></p>
 <p>Ici, <span class="arithmatex">\(\tau(t)\)</span> est le signal d'entrée correspondant au couple appliqué au moteur, <span class="arithmatex">\(\theta_1(t)\)</span> est l'angle mesuré du moteur et <span class="arithmatex">\(\theta_2(t)\)</span> est l'angle mesuré du pendule.
-La structure des deux fonctions de transfert impliquées est la suivante :
-<span class="arithmatex">\(<span class="arithmatex">\(G_1(s) = \frac{k_1 (s^2 - z^2)}{s^2(s^2 - p^2)}\)</span>\)</span>et
-<span class="arithmatex">\(<span class="arithmatex">\(G_2(s) = \frac{k_2}{s^2 - p^2}\)</span>\)</span>
-ayant que quatre paramètres <span class="arithmatex">\(k_1, k_2, z\)</span> et <span class="arithmatex">\(p\)</span> à identifier.</p>
+La structure des deux fonctions de transfert impliquées est la suivante :</p>
+<div class="arithmatex">\[G_1(s) = \frac{k_1 (s^2 - z^2)}{s^2(s^2 - p^2)} \:\mbox{et}\]</div>
+<div class="arithmatex">\[G_2(s) = \frac{k_2}{s^2 - p^2}\]</div>
+<p>ayant que quatre paramètres <span class="arithmatex">\(k_1, k_2, z\)</span> et <span class="arithmatex">\(p\)</span> à identifier.</p>
 <p>En mode "Down", <span class="arithmatex">\(p^2\)</span> et <span class="arithmatex">\(z^2\)</span> sont négatifs ce qui donne lieu à deux pôles <span class="arithmatex">\(jp, -jp\)</span> et deux zéros <span class="arithmatex">\(jz, -jz\)</span> purement imaginaires. En mode "Up", <span class="arithmatex">\(p^2\)</span> et <span class="arithmatex">\(z^2\)</span> sont positifs ce qui donne lieu à deux pôles <span class="arithmatex">\(p, -p\)</span> et deux zéros <span class="arithmatex">\(z, -z\)</span> réels, disposés symmétriquement par rapport à l'origine. La figure ci-dessous résume la configuration pôles-zéros de <span class="arithmatex">\(G_1(s)\)</span> pour les deux modes.
 <img alt="alt text" src="../../assets/images/pole_zero.png" /></p>
 <p>Le facteur <span class="arithmatex">\(s^2\)</span> au dénominateur de <span class="arithmatex">\(G_1(s)\)</span> traduit un comportement double-intégrateur. Si l'on applique un couple constant, le moteur va essentiellement accélérer. Le terme <span class="arithmatex">\(\frac{s^2-z^2}{s^2-p^2}\)</span> traduit le couple perturbateur exercé par le pendule sur le moteur. En mode "Down", <span class="arithmatex">\(p\)</span> correspond à une pulsation de résonance, et <span class="arithmatex">\(z\)</span> correspond à une pulsation d'anti-résonance.</p>
