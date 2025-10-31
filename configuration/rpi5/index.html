@@ -22,7 +22,7 @@
     
     
       
-        <title>Configuration du RPI5 - Documentation Pendule Furuta</title>
+        <title>Configuration du Raspberry Pi 5 - Documentation Pendule Furuta</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#configuration-du-rpi5" class="md-skip">
+        <a href="#configuration-du-raspberry-pi-5" class="md-skip">
           Aller au contenu
         </a>
       
@@ -90,7 +90,7 @@
   <nav class="md-header__inner md-grid" aria-label="En-tête">
     <a href="../.." title="Documentation Pendule Furuta" class="md-header__button md-logo" aria-label="Documentation Pendule Furuta" data-md-component="logo">
       
-  <img src="https://raw.githubusercontent.com/HEIG-VD/logos/main/heig-vd/heig-vd-white.svg" alt="logo">
+  <img src="https://raw.githubusercontent.com/heig-vd/logos/main/heig-vd/svg/heig-vd-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -107,7 +107,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Configuration du RPI5
+              Configuration du Raspberry Pi 5
             
           </span>
         </div>
@@ -317,7 +317,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="Documentation Pendule Furuta" class="md-nav__button md-logo" aria-label="Documentation Pendule Furuta" data-md-component="logo">
       
-  <img src="https://raw.githubusercontent.com/HEIG-VD/logos/main/heig-vd/heig-vd-white.svg" alt="logo">
+  <img src="https://raw.githubusercontent.com/heig-vd/logos/main/heig-vd/svg/heig-vd-white.svg" alt="logo">
 
     </a>
     Documentation Pendule Furuta
@@ -538,17 +538,67 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Configuration du Raspberry Pi 5
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
-    Configuration du RPI5
+    Configuration du Raspberry Pi 5
     
   </span>
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#raspberry-pi-os" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raspberry Pi OS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guide-dinstallation-du-raspberry-pi" class="md-nav__link">
+    <span class="md-ellipsis">
+      Guide d'installation du Raspberry Pi
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -653,6 +703,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#raspberry-pi-os" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raspberry Pi OS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guide-dinstallation-du-raspberry-pi" class="md-nav__link">
+    <span class="md-ellipsis">
+      Guide d'installation du Raspberry Pi
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -670,10 +746,22 @@
   
 
 
-<h1 id="configuration-du-rpi5">Configuration du RPI5</h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>A Compléter</p>
+<h1 id="configuration-du-raspberry-pi-5">Configuration du Raspberry Pi 5</h1>
+<h2 id="raspberry-pi-os">Raspberry Pi OS</h2>
+<p>Afin d'optimiser les performances du Raspberry Pi 5, une image minimale de Raspberry Pi OS préconfigurée est construite avec l'outil <a href="https://github.com/RPi-Distro/pi-gen">Pi-Gen</a>. L'image peut être téléchargée ou compilée depuis le dépôt GitHub <a href="">pendule-furuta-installation</a>. <strong>Dépôt pas encore disponible.</strong></p>
+<h2 id="guide-dinstallation-du-raspberry-pi">Guide d'installation du Raspberry Pi</h2>
+<ol>
+<li>Récupérer l'adresse MAC du Raspberry Pi 5 en branchant le RPI5 à un écran sans la carte microSD. L'adresse MAC est affichée au démarrage.</li>
+<li>Enregistrer l'adresse MAC auprès du service informatique qui attribuera un mot de passe WiFi unique.</li>
+<li>Télécharger l'image Raspberry Pi OS préconfigurée depuis le dépôt GitHub <a href="">pendule-furuta-installation</a> <strong>Dépôt pas encore disponible.</strong> ou compiler l'image avec Pi-Gen.</li>
+<li>Flasher l'image sur une carte microSD avec <a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a>.</li>
+<li>Modifier le fichier <code>pendule-furuta-installation/cloud-init/user-data</code> pour y insérer le mot de passe WiFi attribué.</li>
+<li>Ajouter le contenu du dossier <code>pendule-furuta-installation/cloud-init</code> dans la partition <code>boot</code> de la carte microSD.</li>
+<li>Insérer la carte microSD dans le Raspberry Pi 5 et démarrer.</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>L'étape 5 doit impérativement être réalisée avant le premier démarrage du Raspberry Pi 5 sur la carte microSD nouvellement flashée. Sinon, le Raspberry Pi 5 n'exécutera pas la configuration cloud-init. Si le Raspberry Pi 5 a déjà été démarré une fois avec cette carte microSD, il faut nettoyer l'état cloud-init avec la commande <code>sudo cloud-init clean --logs</code> et redémarrer le Raspberry Pi 5 pour appliquer la configuration.</p>
 </div>
 
 
