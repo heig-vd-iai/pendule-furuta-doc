@@ -9,7 +9,7 @@ theme:
   language: fr
   font:
     text: Nunito
-  logo: https://raw.githubusercontent.com/HEIG-VD/logos/main/heig-vd/heig-vd-white.svg
+  logo: https://raw.githubusercontent.com/heig-vd/logos/main/heig-vd/svg/heig-vd-white.svg
   features:
     - content.tooltips
     - navigation.tabs
