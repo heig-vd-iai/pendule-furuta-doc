@@ -22,7 +22,7 @@
     
     
       
-        <title>Architecture logicielle - Documentation Pendule Furuta</title>
+        <title>Application - Documentation Pendule Furuta</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architecture-logicielle" class="md-skip">
+        <a href="#application" class="md-skip">
           Aller au contenu
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture logicielle
+              Application
             
           </span>
         </div>
@@ -499,7 +499,7 @@
   
   
   <span class="md-ellipsis">
-    Architecture logicielle
+    Application
     
   </span>
   
@@ -695,8 +695,25 @@
   
 
 
-<h1 id="architecture-logicielle">Architecture logicielle</h1>
-<p><img alt="diagramme architecture" src="../../assets/diagrams/architecture.svg" /></p>
+<h1 id="application">Application</h1>
+<p>3 services tournent sur le Raspberry Pi 5 pour faire fonctionner la pendule de Furuta :</p>
+<ul>
+<li><strong>Application core (furuta-core.service)</strong> : 
+    service principal de l'application, il gère la logique de contrôle de la pendule et communique avec les autres services.</li>
+<li><strong>Application display (furuta-display.service)</strong> : 
+    service responsable de l'affichage sur l'écran du pendule de Furuta.</li>
+<li><strong>Jupyter notebook server (furuta-jupyter.service)</strong> : 
+    service qui héberge les notebooks Jupyter pour l'interaction utilisateur et la visualisation des données.</li>
+</ul>
+<p><img alt="diagramme d'architecture" src="../../assets/diagrams/architecture.svg" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Les services peuvent être gérés avec <code>systemctl</code> :</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>furuta-core.service
+sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>furuta-display.service
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>furuta-jupyter.service
+</code></pre></div>
+</div>
 
 
 
