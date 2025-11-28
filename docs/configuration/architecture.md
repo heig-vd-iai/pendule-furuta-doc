@@ -1,5 +1,6 @@
 # Application
 
+## Services
 3 services tournent sur le Raspberry Pi 5 pour faire fonctionner la pendule de Furuta :
 
 - **Application core (furuta-core.service)** : 
@@ -19,3 +20,4 @@
     sudo systemctl stop furuta-display.service
     sudo systemctl status furuta-jupyter.service
     ```
+
