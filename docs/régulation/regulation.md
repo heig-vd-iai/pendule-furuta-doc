@@ -10,12 +10,42 @@
   
 ## Logiciel de régulation
 
-La régulation du pendule s'effectue sur la RPI5 dans le langage de programmation Python. Ce choix a été motivé par le fait que nos étudiants ont plus d'expérience en Python que en C. Cela permet aussi une facilité de programmation.
+La régulation du pendule s'effectue sur la RPI5 dans l'application `furuta_core`, écrite en C++ (dépôt [pendule-furuta-core](https://github.com/heig-vd-iai/pendule-furuta-core)). Une première version en Python avait montré ses limites (jitter de la période d'échantillonnage élevé, coups d'horloge ratés) ; le passage en C++, combiné à une priorité temps réel FIFO et à un cœur CPU dédié (`chrt -f 90 taskset -c 3`), permet un comportement proche du temps réel dur.
 
-Evidemment Python ne permet pas d'atteindre le temps réel dur, et le jitter de la période d'échantillonnage est relativement élevé. Parfois, il y a même des coups d'horloge ratés. Ceci n'est pas trop grave, car la fréquence d'échantillonnage vaut 1 kHz, ce qui est très élevé par rapport à la dynamique de la maquette. Pour minimiser le problème du jitter, il faut *impérativement* lancer le programme de régulation en priorité maximale en utilisant la commande 
-`sudo chrt --fifo 99 xxxx.py`.
+L'horloge de la régulation provient du bus CANopen : la RPI5, master CANopen, émet un message SYNC toutes les 2 ms. Le drive ELMO publie ses mesures (positions et vitesses des deux codeurs) par PDO synchrones, et le core calcule à chaque SYNC le couple à appliquer, soit à une cadence de 500 Hz — très élevée par rapport à la dynamique de la maquette. La consigne de couple est renvoyée au drive par PDO.
 
-L'horloge pour lancer périodiquement le code de la régulation provient du drive ELMO. La RPI5 configure à l'initialisation des PDO CANopen sur le drive. Ces PDO sont à une cadence de 1 ms. Le programme de régulation sur la RPI5 fait un polling et attend la réception de la trame CANopen. Il n'y a donc pas d'interruptions ou d'events, c'est simplement une boucle *while* qui attend l'arrivée des trames.
+Les étudiants n'interviennent pas dans le code C++ : ils pilotent le pendule depuis Python (notebooks Jupyter) via la bibliothèque `pendule-furuta-interface`, qui permet de changer de mode et de déclencher des acquisitions de mesures au format HDF5 (voir la page [Application](../configuration/architecture.md)).
+
+## Modes de fonctionnement
+
+Le core implémente cinq modes, sélectionnables depuis l'interface Python ou l'écran de la maquette :
+
+| Mode | Description |
+| --- | --- |
+| `IDLE` | Étage de puissance coupé, moteur libre. |
+| `REGULATION_DOWN` | Retour d'état LQR autour de la position d'équilibre basse. |
+| `REGULATION_UP` | Retour d'état LQR autour de la position d'équilibre haute (pendule inversé). |
+| `SWING_UP` | Séquence de lancement puis loi de commande en énergie pour amener le pendule en haut. |
+| `IDENTIFICATION` | Régulation LQR en haut avec superposition d'un signal d'excitation, mesures enregistrées en HDF5. |
+
+Dans les modes de régulation, la loi de commande est un retour d'état complet
+
+$$u = -k_1\,\theta_1 - k_2\,\theta_2 - k_3\,\dot{\theta}_1 - k_4\,\dot{\theta}_2$$
+
+avec un jeu de gains LQR propre à chaque mode et une saturation du couple par mode (0.4 à 0.6 Nm). Le zéro de l'angle du bras $\theta_1$ est recalé à chaque changement de mode.
+
+Le mode `SWING_UP` enchaîne les phases suivantes :
+
+1. stabilisation du pendule en bas par le régulateur `DOWN` (1.5 s), puis courte pause moteur libre ;
+2. impulsion de couple positive puis négative pour lancer l'oscillation, d'amplitude atténuée selon la vitesse du pendule ;
+3. loi de commande en énergie $u = k_v\,E\,\dot{\theta}_2\cos(\theta_2)$, où $E$ est l'écart d'énergie mécanique par rapport à la position haute à l'arrêt ;
+4. dès que le pendule entre dans la fenêtre de capture (angle proche de la verticale, vitesses sous les seuils), passage automatique en `REGULATION_UP`.
+
+Quelques transitions de sécurité sont gérées automatiquement par le core :
+
+- en `REGULATION_DOWN` et `IDENTIFICATION`, si l'angle du pendule sort de la zone de validité, retour en `IDLE` ;
+- en `REGULATION_UP`, si le pendule tombe, relance automatique d'un `SWING_UP` ;
+- le zéro du codeur du pendule est recalé automatiquement lorsque le pendule est détecté immobile en bas (filtrage passe-bas des mesures et confirmation sur plusieurs échantillons).
 
 ## Modélisation et identification
 
@@ -66,6 +96,9 @@ Cette manière de faire permet un contrôle précis de la grille fréquentielle 
 
 Le diagramme de Bode de $G_1(s)$ p.ex. devrait ressembler au graphique ci-dessous.
 ![alt text](/assets/images/bode_G_1.png)
+
+!!! note "En pratique"
+    Sur la maquette, le mode `IDENTIFICATION` du core applique un signal d'excitation lu depuis le fichier `/home/pendule/workspace/excitation.h5` (dataset `signal`, attribut `fs`), superposé à la commande du régulateur. Les mesures sont enregistrées automatiquement dans un fichier `identification_*.h5` sous `/home/pendule/workspace/data/`, de la même longueur que le signal d'excitation.
 
 ## Outils de simulation Matlab
 

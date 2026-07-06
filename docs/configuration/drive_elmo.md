@@ -1,16 +1,16 @@
 # Paramétrisation du drive ELMO
+
+Pour la paramétrisation du drive ELMO, il faut préalablement installer le logiciel de paramétrisation EASII. La communication avec le drive se fait via une liaison sérielle (RS232) : une passerelle USB ⇔ RS232 est incluse sur le PCB custom de la maquette. Lors de la première connexion USB, un pilote devrait s'installer.
+
+La possibilité la plus simple pour paramétrer un drive ELMO vierge consiste à télécharger le fichier de configuration `pendule-furuta.gprm`, disponible dans le dossier `elmo driver/` du dépôt [pendule-furuta-installation](https://github.com/heig-vd-iai/pendule-furuta-installation). La marche à suivre est la suivante :
+
+1. Connecter le drive ELMO à l'aide d'un câble USB-C branché sur la carte HAT du pendule de Furuta.
+2. Ouvrir le logiciel EASII et se connecter en **RS232** sur le port COM correspondant (baudrate `115200`, parité `none`).
+3. Dans la barre d'outils *Parameters*, cliquer sur **Textual** (*Download Textual Parameters file to drive*).
+4. Sélectionner le fichier `elmo driver/pendule-furuta.gprm` et valider.
+
 !!! note
-    A Compléter
-
-Pour la paramétrisation du drive ELMO, il faut préalablement installer le logiciel de paramétrisation EASII. La communication avec le drive se fait via une liaison sérielle (RS232). Pour cela, une puce `????` est inclue sur le PCB custom de la maquette qui fait passerelle USB <=> RS232. Lors de la première connection USB, un pilote devrait s'installer.
-
-Configuration du baudrate ......
-
-La possibilité la plus simple pour paramétrer un drive ELMO vierge consiste à downloader le fichier de configuration `xxxxxx.yyy`. Pour ce faire, la marche à suivre est la suivante :
-
-- bla1
-- bla2
-- bla3
+    Résumé des settings à compléter.
 
 Ci-dessous un *résumé* des settings inclus dans le fichier de paramétrisation :
 
