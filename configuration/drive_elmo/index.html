@@ -546,7 +546,7 @@
   
   
   <span class="md-ellipsis">
-    Configuration du Raspberry Pi 5
+    Mise en service du Raspberry Pi 5
     
   </span>
   
@@ -673,18 +673,18 @@
 
 
 <h1 id="parametrisation-du-drive-elmo">Paramétrisation du drive ELMO</h1>
+<p>Pour la paramétrisation du drive ELMO, il faut préalablement installer le logiciel de paramétrisation EASII. La communication avec le drive se fait via une liaison sérielle (RS232) : une passerelle USB ⇔ RS232 est incluse sur le PCB custom de la maquette. Lors de la première connexion USB, un pilote devrait s'installer.</p>
+<p>La possibilité la plus simple pour paramétrer un drive ELMO vierge consiste à télécharger le fichier de configuration <code>pendule-furuta.gprm</code>, disponible dans le dossier <code>elmo driver/</code> du dépôt <a href="https://github.com/heig-vd-iai/pendule-furuta-installation">pendule-furuta-installation</a>. La marche à suivre est la suivante :</p>
+<ol>
+<li>Connecter le drive ELMO à l'aide d'un câble USB-C branché sur la carte HAT du pendule de Furuta.</li>
+<li>Ouvrir le logiciel EASII et se connecter en <strong>RS232</strong> sur le port COM correspondant (baudrate <code>115200</code>, parité <code>none</code>).</li>
+<li>Dans la barre d'outils <em>Parameters</em>, cliquer sur <strong>Textual</strong> (<em>Download Textual Parameters file to drive</em>).</li>
+<li>Sélectionner le fichier <code>elmo driver/pendule-furuta.gprm</code> et valider.</li>
+</ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>A Compléter</p>
+<p>Résumé des settings à compléter.</p>
 </div>
-<p>Pour la paramétrisation du drive ELMO, il faut préalablement installer le logiciel de paramétrisation EASII. La communication avec le drive se fait via une liaison sérielle (RS232). Pour cela, une puce <code>????</code> est inclue sur le PCB custom de la maquette qui fait passerelle USB &lt;=&gt; RS232. Lors de la première connection USB, un pilote devrait s'installer.</p>
-<p>Configuration du baudrate ......</p>
-<p>La possibilité la plus simple pour paramétrer un drive ELMO vierge consiste à downloader le fichier de configuration <code>xxxxxx.yyy</code>. Pour ce faire, la marche à suivre est la suivante :</p>
-<ul>
-<li>bla1</li>
-<li>bla2</li>
-<li>bla3</li>
-</ul>
 <p>Ci-dessous un <em>résumé</em> des settings inclus dans le fichier de paramétrisation :</p>
 <ul>
 <li>nombre de pôles de pairs = 7</li>

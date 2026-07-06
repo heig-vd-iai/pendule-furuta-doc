@@ -543,6 +543,42 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#application-core-furuta_core" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application core (furuta_core)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#communication-interface-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      Communication interface ↔ core
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interface-python-pendule-furuta-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interface Python (pendule-furuta-interface)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acquisition-de-donnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acquisition de données
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -587,7 +623,7 @@
   
   
   <span class="md-ellipsis">
-    Configuration du Raspberry Pi 5
+    Mise en service du Raspberry Pi 5
     
   </span>
   
@@ -711,6 +747,42 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#application-core-furuta_core" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application core (furuta_core)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#communication-interface-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      Communication interface ↔ core
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interface-python-pendule-furuta-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interface Python (pendule-furuta-interface)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acquisition-de-donnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      Acquisition de données
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -735,12 +807,13 @@
 <p>3 services tournent sur le Raspberry Pi 5 pour faire fonctionner la pendule de Furuta :</p>
 <ul>
 <li><strong>Application core (furuta-core.service)</strong> : 
-    service principal de l'application, il gère la logique de contrôle de la pendule et communique avec les autres services.</li>
+    service principal de l'application, écrit en C++. Il gère la communication CANopen avec le drive ELMO, exécute la régulation en temps réel et communique avec les autres services via une mémoire partagée.</li>
 <li><strong>Application display (furuta-display.service)</strong> : 
-    service responsable de l'affichage sur l'écran du pendule de Furuta.</li>
+    service responsable de l'affichage sur l'écran OLED du pendule de Furuta et de la gestion des quatre boutons. Il permet de changer de mode et d'afficher l'état du pendule sans PC.</li>
 <li><strong>Jupyter notebook server (furuta-jupyter.service)</strong> : 
-    service qui héberge les notebooks Jupyter pour l'interaction utilisateur et la visualisation des données.</li>
+    service qui héberge les notebooks Jupyter pour l'interaction utilisateur et la visualisation des données. <strong>Pas encore disponible.</strong></li>
 </ul>
+<p>Les unités systemd <code>furuta-core.service</code> et <code>furuta-display.service</code> sont fournies dans le dossier <code>service/</code> du dépôt <a href="https://github.com/heig-vd-iai/pendule-furuta-core">pendule-furuta-core</a>.</p>
 <p><img alt="diagramme d'architecture" src="../../assets/diagrams/architecture.svg" /></p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -750,6 +823,159 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"
 sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>furuta-jupyter.service
 </code></pre></div>
 </div>
+<h2 id="application-core-furuta_core">Application core (<code>furuta_core</code>)</h2>
+<p>L'application core se trouve dans le dépôt <a href="https://github.com/heig-vd-iai/pendule-furuta-core">pendule-furuta-core</a>. Elle est écrite en C++ et s'appuie sur la bibliothèque <a href="https://opensource.lely.com/canopen/">lely-core</a> pour jouer le rôle de master CANopen sur le bus <code>can0</code>.</p>
+<ul>
+<li><strong>Master CANopen</strong> : node 1, configuré par <code>master_config.yaml</code> (le fichier <code>master.dcf</code> est généré avec <code>dcfgen -r master_config.yaml</code>).</li>
+<li><strong>Drive ELMO</strong> : node 127, décrit par le fichier EDS <code>elmo.eds</code>.</li>
+<li><strong>Cadence</strong> : le master émet un message SYNC toutes les 2 ms (<code>sync_period: 2000</code> µs). Le drive publie ses mesures par TPDO synchrones et le core calcule le couple à chaque SYNC, soit à 500 Hz.</li>
+</ul>
+<p>Les objets échangés par PDO sont :</p>
+<table>
+<thead>
+<tr>
+<th>Sens</th>
+<th>Objet</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>drive → core</td>
+<td><code>0x6064</code></td>
+<td>position du bras (codeur moteur)</td>
+</tr>
+<tr>
+<td>drive → core</td>
+<td><code>0x606C</code></td>
+<td>vitesse du bras</td>
+</tr>
+<tr>
+<td>drive → core</td>
+<td><code>0x20A0</code></td>
+<td>position du pendule</td>
+</tr>
+<tr>
+<td>drive → core</td>
+<td><code>0x2F00:01</code></td>
+<td>vitesse du pendule</td>
+</tr>
+<tr>
+<td>core → drive</td>
+<td><code>0x6071</code></td>
+<td>consigne de couple (Target Torque)</td>
+</tr>
+</tbody>
+</table>
+<p>Le drive est configuré en mode <em>Profile Torque</em> au démarrage. En mode <code>IDLE</code>, l'étage de puissance est coupé (moteur libre) ; il n'est activé (<em>Operation Enabled</em>) qu'à l'entrée dans un mode actif.</p>
+<p>Pour garantir un comportement proche du temps réel, le service systemd lance l'application avec une priorité FIFO élevée sur un cœur CPU dédié :</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>chrt<span class="w"> </span>-f<span class="w"> </span><span class="m">90</span><span class="w"> </span>taskset<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span>./furuta_core
+</code></pre></div>
+<h2 id="communication-interface-core">Communication interface ↔ core</h2>
+<p>Le core crée un segment de mémoire partagée POSIX nommé <code>/furuta_ctl_shm</code>. Toute la communication avec les autres processus (interface Python, display) passe par ce segment, avec un protocole <em>seq/ack</em> :</p>
+<ol>
+<li>le client écrit ses commandes (mode, demande d'acquisition, taille d'acquisition) puis incrémente le champ <code>seq</code> ;</li>
+<li>à chaque SYNC, le core lit les nouvelles commandes et acquitte en recopiant <code>seq</code> dans <code>ack</code> ;</li>
+<li>le core publie en continu l'état mesuré (positions, vitesses) et le mode courant, en lecture seule pour les clients.</li>
+</ol>
+<p>La structure <code>Communication::SharedData</code> (<code>src/communication.hpp</code>) définit la disposition mémoire :</p>
+<table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Champ</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>seq</code></td>
+<td>uint32</td>
+<td>numéro de séquence de commande (client)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>ack</code></td>
+<td>uint32</td>
+<td>acquittement (core)</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>mode</code></td>
+<td>uint32</td>
+<td>mode demandé / mode courant</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>startAcquisition</code></td>
+<td>uint32</td>
+<td>demande de démarrage d'acquisition</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>acquisitionSize</code></td>
+<td>uint32</td>
+<td>nombre d'échantillons à acquérir</td>
+</tr>
+<tr>
+<td>20</td>
+<td><code>position</code></td>
+<td>float</td>
+<td>angle du bras (rad)</td>
+</tr>
+<tr>
+<td>24</td>
+<td><code>pendulumPosition</code></td>
+<td>float</td>
+<td>angle du pendule (rad), 0 = en bas</td>
+</tr>
+<tr>
+<td>28</td>
+<td><code>velocity</code></td>
+<td>float</td>
+<td>vitesse du bras (rad/s)</td>
+</tr>
+<tr>
+<td>32</td>
+<td><code>pendulumVelocity</code></td>
+<td>float</td>
+<td>vitesse du pendule (rad/s)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Le mode publié par le core peut différer du mode commandé : le core change de mode de lui-même, par exemple <code>SWING_UP</code> → <code>REGULATION_UP</code> une fois le pendule capturé en haut, ou passage en <code>IDLE</code> en cas de chute.</p>
+</div>
+<h2 id="interface-python-pendule-furuta-interface">Interface Python (<code>pendule-furuta-interface</code>)</h2>
+<p>La bibliothèque Python <code>pendule-furuta-interface</code> (dossier <code>pendule-furuta-interface/</code> du dépôt core) abstrait la communication par mémoire partagée. C'est l'API utilisée dans les notebooks Jupyter et par le display.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pendule_furuta_interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">FurutaPendulum</span><span class="p">,</span> <span class="n">Mode</span>
+
+<span class="n">pendulum</span> <span class="o">=</span> <span class="n">FurutaPendulum</span><span class="p">()</span>
+
+<span class="n">pendulum</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">Mode</span><span class="o">.</span><span class="n">SWING_UP</span><span class="p">)</span>     <span class="c1"># change le mode du core</span>
+<span class="n">pendulum</span><span class="o">.</span><span class="n">start_acquisition</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>     <span class="c1"># enregistre 1000 échantillons</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>             <span class="c1"># angle du bras (rad)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">pendulum_position</span><span class="p">)</span>    <span class="c1"># angle du pendule (rad), 0 = en bas</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>             <span class="c1"># vitesse du bras (rad/s)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">pendulum_velocity</span><span class="p">)</span>    <span class="c1"># vitesse du pendule (rad/s)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">current_mode</span><span class="p">)</span>         <span class="c1"># mode courant du core</span>
+</code></pre></div>
+<p>Les modes disponibles (<code>Mode</code>) sont : <code>IDLE</code>, <code>REGULATION_DOWN</code>, <code>REGULATION_UP</code>, <code>IDENTIFICATION</code>, <code>SWING_UP</code> (voir la page <a href="../../r%C3%A9gulation/regulation/">Régulation</a>).</p>
+<p>Les méthodes <code>set_mode</code> et <code>start_acquisition</code> retournent <code>True</code> si le core a acquitté la commande dans le délai imparti (1 s par défaut).</p>
+<h2 id="acquisition-de-donnees">Acquisition de données</h2>
+<p>Sur demande de l'interface (<code>start_acquisition(n)</code>), le core enregistre <code>n</code> échantillons — un par SYNC, soit toutes les 2 ms — dans un fichier HDF5 horodaté (<code>acquisition_YYYYMMDD_HHMMSS.h5</code>). Le fichier est écrit localement puis déplacé dans <code>/home/pendule/workspace/data/</code>, où il est accessible depuis les notebooks Jupyter.</p>
+<p>Chaque enregistrement contient :</p>
+<ul>
+<li>les horodatages (µs) de la dernière mise à jour de chaque mesure,</li>
+<li>un compteur de séquence et le node CANopen,</li>
+<li><code>position</code>, <code>pendulumPosition</code>, <code>velocity</code>, <code>pendulumVelocity</code>,</li>
+<li>le couple commandé <code>torque</code>.</li>
+</ul>
+<p>En mode <code>IDENTIFICATION</code>, la demande d'acquisition déclenche en plus le signal d'excitation chargé depuis <code>/home/pendule/workspace/excitation.h5</code> (dataset <code>signal</code>, attribut <code>fs</code>) ; l'acquisition dure alors exactement la longueur du signal et le fichier est nommé <code>identification_YYYYMMDD_HHMMSS.h5</code>.</p>
 
 
 

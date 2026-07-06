@@ -22,7 +22,7 @@
     
     
       
-        <title>Configuration du Raspberry Pi 5 - Documentation Pendule Furuta</title>
+        <title>Mise en service du Raspberry Pi 5 - Documentation Pendule Furuta</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#configuration-du-raspberry-pi-5" class="md-skip">
+        <a href="#mise-en-service-du-raspberry-pi-5" class="md-skip">
           Aller au contenu
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Configuration du Raspberry Pi 5
+              Mise en service du Raspberry Pi 5
             
           </span>
         </div>
@@ -545,7 +545,7 @@
   
   
   <span class="md-ellipsis">
-    Configuration du Raspberry Pi 5
+    Mise en service du Raspberry Pi 5
     
   </span>
   
@@ -558,7 +558,7 @@
   
   
   <span class="md-ellipsis">
-    Configuration du Raspberry Pi 5
+    Mise en service du Raspberry Pi 5
     
   </span>
   
@@ -581,18 +581,69 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#raspberry-pi-os" class="md-nav__link">
+  <a href="#prerequis" class="md-nav__link">
     <span class="md-ellipsis">
-      Raspberry Pi OS
+      Prérequis
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#guide-dinstallation-du-raspberry-pi" class="md-nav__link">
+  <a href="#1-flash-de-limage-raspberry-pi-os" class="md-nav__link">
     <span class="md-ellipsis">
-      Guide d'installation du Raspberry Pi
+      1. Flash de l'image Raspberry Pi OS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-connexion-initiale" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Connexion initiale
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-configuration-avec-ansible" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Configuration avec Ansible
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Configuration avec Ansible">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-bootstrap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1 — Bootstrap
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-wi-fi" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2 — Wi-Fi
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-configuration-du-drive-elmo" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Configuration du drive ELMO
     </span>
   </a>
   
@@ -712,18 +763,69 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#raspberry-pi-os" class="md-nav__link">
+  <a href="#prerequis" class="md-nav__link">
     <span class="md-ellipsis">
-      Raspberry Pi OS
+      Prérequis
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#guide-dinstallation-du-raspberry-pi" class="md-nav__link">
+  <a href="#1-flash-de-limage-raspberry-pi-os" class="md-nav__link">
     <span class="md-ellipsis">
-      Guide d'installation du Raspberry Pi
+      1. Flash de l'image Raspberry Pi OS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-connexion-initiale" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Connexion initiale
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-configuration-avec-ansible" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Configuration avec Ansible
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Configuration avec Ansible">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-bootstrap" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 1 — Bootstrap
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-wi-fi" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 2 — Wi-Fi
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-configuration-du-drive-elmo" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Configuration du drive ELMO
     </span>
   </a>
   
@@ -748,23 +850,52 @@
   
 
 
-<h1 id="configuration-du-raspberry-pi-5">Configuration du Raspberry Pi 5</h1>
-<h2 id="raspberry-pi-os">Raspberry Pi OS</h2>
-<p>Afin d'optimiser les performances du Raspberry Pi 5, une image minimale de Raspberry Pi OS préconfigurée est construite avec l'outil <a href="https://github.com/RPi-Distro/pi-gen">Pi-Gen</a>. L'image peut être téléchargée ou compilée depuis le dépôt GitHub <a href="">pendule-furuta-installation</a>. <strong>Dépôt pas encore disponible.</strong></p>
-<h2 id="guide-dinstallation-du-raspberry-pi">Guide d'installation du Raspberry Pi</h2>
-<ol>
-<li>Récupérer l'adresse MAC du Raspberry Pi 5 en branchant le RPI5 à un écran sans la carte microSD. L'adresse MAC est affichée au démarrage.</li>
-<li>Enregistrer l'adresse MAC auprès du service informatique qui attribuera un mot de passe WiFi unique.</li>
-<li>Télécharger l'image Raspberry Pi OS préconfigurée depuis le dépôt GitHub <a href="">pendule-furuta-installation</a> <strong>Dépôt pas encore disponible.</strong> ou compiler l'image avec Pi-Gen.</li>
-<li>Flasher l'image sur une carte microSD avec <a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a>.</li>
-<li>Modifier le fichier <code>pendule-furuta-installation/cloud-init/user-data</code> pour y insérer le mot de passe WiFi attribué.</li>
-<li>Ajouter le contenu du dossier <code>pendule-furuta-installation/cloud-init</code> dans la partition <code>boot</code> de la carte microSD.</li>
-<li>Insérer la carte microSD dans le Raspberry Pi 5 et démarrer.</li>
-</ol>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>L'étape 5 doit impérativement être réalisée avant le premier démarrage du Raspberry Pi 5 sur la carte microSD nouvellement flashée. Sinon, le Raspberry Pi 5 n'exécutera pas la configuration cloud-init. Si le Raspberry Pi 5 a déjà été démarré une fois avec cette carte microSD, il faut nettoyer l'état cloud-init avec la commande <code>sudo cloud-init clean --logs</code> et redémarrer le Raspberry Pi 5 pour appliquer la configuration.</p>
+<h1 id="mise-en-service-du-raspberry-pi-5">Mise en service du Raspberry Pi 5</h1>
+<p>Le dépôt <a href="https://github.com/heig-vd-iai/pendule-furuta-installation">pendule-furuta-installation</a> automatise le déploiement complet d'une maquette : flash de l'image système, configuration réseau et système via Ansible, compilation de la stack CANopen, déploiement de l'application <code>pendule-furuta-core</code> et configuration du drive moteur ELMO.</p>
+<h2 id="prerequis">Prérequis</h2>
+<ul>
+<li><a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a></li>
+<li><a href="https://docs.astral.sh/uv/">uv</a> (gestion de l'environnement Python et des dépendances Ansible)</li>
+<li>Une clé de déploiement SSH (<code>id_ed25519_repo</code> / <code>id_ed25519_repo.pub</code>) donnant accès en lecture au dépôt privé <code>pendule-furuta-core</code>, à placer dans <code>ansible/roles/bootstrap/files/</code></li>
+<li>Le logiciel EASII pour la configuration du drive ELMO (voir <a href="../drive_elmo/">Paramétrisation du drive ELMO</a>)</li>
+</ul>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Ne jamais committer la clé de déploiement SSH dans le dépôt.</p>
 </div>
+<h2 id="1-flash-de-limage-raspberry-pi-os">1. Flash de l'image Raspberry Pi OS</h2>
+<p>Le script <code>flash_rpi.bat</code> flashe une carte SD avec l'image Raspberry Pi OS Lite (via <code>rpi-imager</code> en ligne de commande). Il doit être lancé depuis un terminal Windows <strong>en administrateur</strong> :</p>
+<div class="highlight"><pre><span></span><code>flash_rpi.bat &lt;disk_num&gt;
+</code></pre></div>
+<p>Appelé sans argument, le script affiche la liste des disques disponibles pour identifier <code>&lt;disk_num&gt;</code>.</p>
+<p>La configuration réseau et utilisateur est injectée au flash via les fichiers <code>cloud-init/user-data</code> et <code>cloud-init/network-config</code>.</p>
+<h2 id="2-connexion-initiale">2. Connexion initiale</h2>
+<p>La première connexion au Raspberry Pi se fait via le port Ethernet, sur l'adresse IP statique <code>192.168.137.100</code>. L'interface Ethernet du PC hôte doit être configurée avec une IP dans la même plage, par exemple <code>192.168.137.1</code>.</p>
+<p>Le partage de connexion internet doit être activé sur une autre interface du PC hôte (par exemple le Wi-Fi), afin que le Raspberry Pi ait accès à internet le temps de l'installation :</p>
+<ol>
+<li>Ouvrir les propriétés de la connexion internet (Wi-Fi) dans le panneau de configuration Windows.</li>
+<li>Onglet <strong>Partage</strong> → cocher <em>Autoriser les autres utilisateurs du réseau à se connecter via la connexion Internet de cet ordinateur</em>.</li>
+<li>Sélectionner l'interface Ethernet cible dans la liste déroulante.</li>
+</ol>
+<h2 id="3-configuration-avec-ansible">3. Configuration avec Ansible</h2>
+<h3 id="phase-1-bootstrap">Phase 1 — Bootstrap</h3>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>ansible-playbook<span class="w"> </span>-i<span class="w"> </span>ansible/inventory/hosts.yml<span class="w"> </span>ansible/site.yml<span class="w"> </span>--limit<span class="w"> </span>pendule-furuta-01<span class="w"> </span>--tags<span class="w"> </span>bootstrap
+</code></pre></div>
+<p>Cette phase :</p>
+<ul>
+<li>configure le système (hostname, utilisateur <code>pendule</code>) ;</li>
+<li>compile et installe Lely CANopen depuis les sources ;</li>
+<li>clone (via la clé de déploiement) et compile <code>pendule-furuta-core</code> ;</li>
+<li>active le lien CAN (contrôleur MCP2515 sur SPI, bitrate 500 kbit/s) ;</li>
+<li>installe les services systemd de l'application (voir <a href="../architecture/">Application</a>).</li>
+</ul>
+<p>En fin d'exécution, le playbook affiche l'adresse MAC de l'interface <code>wlan0</code>, à noter pour la phase suivante (enregistrement auprès du réseau Wi-Fi).</p>
+<h3 id="phase-2-wi-fi">Phase 2 — Wi-Fi</h3>
+<p>Avant de lancer cette phase, éditer <code>ansible/host_vars/pendule-furuta-01.yml</code> pour renseigner <code>wifi_ssid</code> et <code>wifi_psk</code> :</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>ansible-playbook<span class="w"> </span>-i<span class="w"> </span>ansible/inventory/hosts.yml<span class="w"> </span>ansible/site.yml<span class="w"> </span>--limit<span class="w"> </span>pendule-furuta-01<span class="w"> </span>--tags<span class="w"> </span>wifi
+</code></pre></div>
+<h2 id="4-configuration-du-drive-elmo">4. Configuration du drive ELMO</h2>
+<p>Le drive doit ensuite être paramétré avec le fichier <code>elmo driver/pendule-furuta.gprm</code> du dépôt : voir la page <a href="../drive_elmo/">Paramétrisation du drive ELMO</a>.</p>
 
 
 

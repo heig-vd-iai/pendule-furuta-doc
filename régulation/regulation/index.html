@@ -529,7 +529,7 @@
   
   
   <span class="md-ellipsis">
-    Configuration du Raspberry Pi 5
+    Mise en service du Raspberry Pi 5
     
   </span>
   
@@ -668,6 +668,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#modes-de-fonctionnement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modes de fonctionnement
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#modelisation-et-identification" class="md-nav__link">
     <span class="md-ellipsis">
       Modélisation et identification
@@ -761,6 +770,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#modes-de-fonctionnement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modes de fonctionnement
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#modelisation-et-identification" class="md-nav__link">
     <span class="md-ellipsis">
       Modélisation et identification
@@ -824,10 +842,57 @@
 </li>
 </ul>
 <h2 id="logiciel-de-regulation">Logiciel de régulation</h2>
-<p>La régulation du pendule s'effectue sur la RPI5 dans le langage de programmation Python. Ce choix a été motivé par le fait que nos étudiants ont plus d'expérience en Python que en C. Cela permet aussi une facilité de programmation.</p>
-<p>Evidemment Python ne permet pas d'atteindre le temps réel dur, et le jitter de la période d'échantillonnage est relativement élevé. Parfois, il y a même des coups d'horloge ratés. Ceci n'est pas trop grave, car la fréquence d'échantillonnage vaut 1 kHz, ce qui est très élevé par rapport à la dynamique de la maquette. Pour minimiser le problème du jitter, il faut <em>impérativement</em> lancer le programme de régulation en priorité maximale en utilisant la commande 
-<code>sudo chrt --fifo 99 xxxx.py</code>.</p>
-<p>L'horloge pour lancer périodiquement le code de la régulation provient du drive ELMO. La RPI5 configure à l'initialisation des PDO CANopen sur le drive. Ces PDO sont à une cadence de 1 ms. Le programme de régulation sur la RPI5 fait un polling et attend la réception de la trame CANopen. Il n'y a donc pas d'interruptions ou d'events, c'est simplement une boucle <em>while</em> qui attend l'arrivée des trames.</p>
+<p>La régulation du pendule s'effectue sur la RPI5 dans l'application <code>furuta_core</code>, écrite en C++ (dépôt <a href="https://github.com/heig-vd-iai/pendule-furuta-core">pendule-furuta-core</a>). Une première version en Python avait montré ses limites (jitter de la période d'échantillonnage élevé, coups d'horloge ratés) ; le passage en C++, combiné à une priorité temps réel FIFO et à un cœur CPU dédié (<code>chrt -f 90 taskset -c 3</code>), permet un comportement proche du temps réel dur.</p>
+<p>L'horloge de la régulation provient du bus CANopen : la RPI5, master CANopen, émet un message SYNC toutes les 2 ms. Le drive ELMO publie ses mesures (positions et vitesses des deux codeurs) par PDO synchrones, et le core calcule à chaque SYNC le couple à appliquer, soit à une cadence de 500 Hz — très élevée par rapport à la dynamique de la maquette. La consigne de couple est renvoyée au drive par PDO.</p>
+<p>Les étudiants n'interviennent pas dans le code C++ : ils pilotent le pendule depuis Python (notebooks Jupyter) via la bibliothèque <code>pendule-furuta-interface</code>, qui permet de changer de mode et de déclencher des acquisitions de mesures au format HDF5 (voir la page <a href="../../configuration/architecture/">Application</a>).</p>
+<h2 id="modes-de-fonctionnement">Modes de fonctionnement</h2>
+<p>Le core implémente cinq modes, sélectionnables depuis l'interface Python ou l'écran de la maquette :</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IDLE</code></td>
+<td>Étage de puissance coupé, moteur libre.</td>
+</tr>
+<tr>
+<td><code>REGULATION_DOWN</code></td>
+<td>Retour d'état LQR autour de la position d'équilibre basse.</td>
+</tr>
+<tr>
+<td><code>REGULATION_UP</code></td>
+<td>Retour d'état LQR autour de la position d'équilibre haute (pendule inversé).</td>
+</tr>
+<tr>
+<td><code>SWING_UP</code></td>
+<td>Séquence de lancement puis loi de commande en énergie pour amener le pendule en haut.</td>
+</tr>
+<tr>
+<td><code>IDENTIFICATION</code></td>
+<td>Régulation LQR en haut avec superposition d'un signal d'excitation, mesures enregistrées en HDF5.</td>
+</tr>
+</tbody>
+</table>
+<p>Dans les modes de régulation, la loi de commande est un retour d'état complet</p>
+<div class="arithmatex">\[u = -k_1\,\theta_1 - k_2\,\theta_2 - k_3\,\dot{\theta}_1 - k_4\,\dot{\theta}_2\]</div>
+<p>avec un jeu de gains LQR propre à chaque mode et une saturation du couple par mode (0.4 à 0.6 Nm). Le zéro de l'angle du bras <span class="arithmatex">\(\theta_1\)</span> est recalé à chaque changement de mode.</p>
+<p>Le mode <code>SWING_UP</code> enchaîne les phases suivantes :</p>
+<ol>
+<li>stabilisation du pendule en bas par le régulateur <code>DOWN</code> (1.5 s), puis courte pause moteur libre ;</li>
+<li>impulsion de couple positive puis négative pour lancer l'oscillation, d'amplitude atténuée selon la vitesse du pendule ;</li>
+<li>loi de commande en énergie <span class="arithmatex">\(u = k_v\,E\,\dot{\theta}_2\cos(\theta_2)\)</span>, où <span class="arithmatex">\(E\)</span> est l'écart d'énergie mécanique par rapport à la position haute à l'arrêt ;</li>
+<li>dès que le pendule entre dans la fenêtre de capture (angle proche de la verticale, vitesses sous les seuils), passage automatique en <code>REGULATION_UP</code>.</li>
+</ol>
+<p>Quelques transitions de sécurité sont gérées automatiquement par le core :</p>
+<ul>
+<li>en <code>REGULATION_DOWN</code> et <code>IDENTIFICATION</code>, si l'angle du pendule sort de la zone de validité, retour en <code>IDLE</code> ;</li>
+<li>en <code>REGULATION_UP</code>, si le pendule tombe, relance automatique d'un <code>SWING_UP</code> ;</li>
+<li>le zéro du codeur du pendule est recalé automatiquement lorsque le pendule est détecté immobile en bas (filtrage passe-bas des mesures et confirmation sur plusieurs échantillons).</li>
+</ul>
 <h2 id="modelisation-et-identification">Modélisation et identification</h2>
 <p>La modélisation du pendule de Furuta est basée sur la publication [2], dans laquelle le formalisme de Lagrange est utilisé pour trouver les équations différentielles nonlinéaires. Rien que l'expression de l'énergie cinétique n'est pas évidente. Ensuite, une linéarisation autour du point d'équilibre "Up" ou "Down" est appliquée. Cette approche n'est pas à la portée de nos étudiants Bachelor, car il leur manque les bases mécaniques et mathématiques. C'est pour cela que c'est préférable d'expliquer aux étudiants la structure d'un modèle linéaire simplifié.</p>
 <h3 id="modele-lineaire-simplifie">Modéle linéaire simplifié</h3>
@@ -865,6 +930,10 @@ La structure des deux fonctions de transfert impliquées est la suivante :</p>
 <p>Cette manière de faire permet un contrôle précis de la grille fréquentielle et des amplitudes d'excitation. Après, on peut comparer les diagrammes de Bode mesurés avec les diagrammes de Bode du modèle, et ajuster "manuellement" les quatre paramètres (et évtl. les taux d'amortissement) jusqu'au point où les diagrammes de Bode mesurés et simulés collent "au mieux". L'effet des paramètres sur les diagrammes de Bode est évident, et on n'a pas forcément besoin d'une méthode d'optimisation.</p>
 <p>Le diagramme de Bode de <span class="arithmatex">\(G_1(s)\)</span> p.ex. devrait ressembler au graphique ci-dessous.
 <img alt="alt text" src="../../assets/images/bode_G_1.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">En pratique</p>
+<p>Sur la maquette, le mode <code>IDENTIFICATION</code> du core applique un signal d'excitation lu depuis le fichier <code>/home/pendule/workspace/excitation.h5</code> (dataset <code>signal</code>, attribut <code>fs</code>), superposé à la commande du régulateur. Les mesures sont enregistrées automatiquement dans un fichier <code>identification_*.h5</code> sous <code>/home/pendule/workspace/data/</code>, de la même longueur que le signal d'excitation.</p>
+</div>
 <h2 id="outils-de-simulation-matlab">Outils de simulation Matlab</h2>
 <p>Les outils suivants ont été développés :</p>
 <p><code>Modelling_Control_S.mlx</code>
