@@ -36,28 +36,37 @@ Le partage de connexion internet doit être activé sur une autre interface du P
 
 ## 3. Configuration avec Ansible
 
+La configuration se fait en trois phases, à exécuter **dans l'ordre**. La phase Wi-Fi doit impérativement avoir abouti avant de lancer la phase d'installation (voir l'avertissement ci-dessous).
+
 ### Phase 1 — Bootstrap
+
+Configure le système : met à jour `/etc/hosts`, définit le hostname et crée l'utilisateur `pendule`.
 
 ```bash
 uv run ansible-playbook -i ansible/inventory/hosts.yml ansible/site.yml --limit pendule-furuta-01 --tags bootstrap
 ```
 
-Cette phase :
-
-- configure le système (hostname, utilisateur `pendule`) ;
-- compile et installe Lely CANopen depuis les sources ;
-- clone (via la clé de déploiement) et compile `pendule-furuta-core` ;
-- active le lien CAN (contrôleur MCP2515 sur SPI, bitrate 500 kbit/s) ;
-- installe les services systemd de l'application (voir [Application](architecture.md)).
-
-En fin d'exécution, le playbook affiche l'adresse MAC de l'interface `wlan0`, à noter pour la phase suivante (enregistrement auprès du réseau Wi-Fi).
+En fin d'exécution, le playbook affiche l'adresse MAC de l'interface `wlan0`, à noter pour la phase suivante.
 
 ### Phase 2 — Wi-Fi
+
+Configure le réseau Wi-Fi du Raspberry Pi : active la radio, crée et active le profil de connexion, **désactive le mode économie d'énergie du Wi-Fi** (afin d'éviter les coupures et l'instabilité de la connexion) et active la persistance de session (`linger`) pour l'utilisateur `pendule`.
 
 Avant de lancer cette phase, éditer `ansible/host_vars/pendule-furuta-01.yml` pour renseigner `wifi_ssid` et `wifi_psk` :
 
 ```bash
 uv run ansible-playbook -i ansible/inventory/hosts.yml ansible/site.yml --limit pendule-furuta-01 --tags wifi
+```
+
+!!! warning
+    Cette phase doit aboutir avec succès avant de poursuivre. La phase d'installation compile Lely CANopen et clone/compile `pendule-furuta-core`, ce qui nécessite un accès internet stable. Le réseau partagé par Windows via l'Ethernet est trop instable pour ces opérations : le Raspberry Pi doit basculer sur sa propre connexion Wi-Fi (avec le mode économie d'énergie désactivé) avant de lancer la phase 3. Vérifier que le Wi-Fi est bien connecté et fonctionnel avant de continuer.
+
+### Phase 3 — Installation
+
+Compile et installe Lely CANopen depuis les sources, clone (via la clé de déploiement, avec relance automatique en cas d'échec) et compile `pendule-furuta-core`, active l'I2C et configure l'accès au bus (utilisé par l'écran OLED du display), configure le lien CAN (contrôleur MCP2515 sur SPI, bitrate 500 kbit/s), et installe les services systemd de l'application (voir [Application](architecture.md)).
+
+```bash
+uv run ansible-playbook -i ansible/inventory/hosts.yml ansible/site.yml --limit pendule-furuta-01 --tags installation
 ```
 
 ## 4. Configuration du drive ELMO
