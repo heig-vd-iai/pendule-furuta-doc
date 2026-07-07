@@ -635,6 +635,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#phase-3-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3 — Installation
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -817,6 +826,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#phase-3-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Phase 3 — Installation
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -878,21 +896,24 @@
 <li>Sélectionner l'interface Ethernet cible dans la liste déroulante.</li>
 </ol>
 <h2 id="3-configuration-avec-ansible">3. Configuration avec Ansible</h2>
+<p>La configuration se fait en trois phases, à exécuter <strong>dans l'ordre</strong>. La phase Wi-Fi doit impérativement avoir abouti avant de lancer la phase d'installation (voir l'avertissement ci-dessous).</p>
 <h3 id="phase-1-bootstrap">Phase 1 — Bootstrap</h3>
+<p>Configure le système : met à jour <code>/etc/hosts</code>, définit le hostname et crée l'utilisateur <code>pendule</code>.</p>
 <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>ansible-playbook<span class="w"> </span>-i<span class="w"> </span>ansible/inventory/hosts.yml<span class="w"> </span>ansible/site.yml<span class="w"> </span>--limit<span class="w"> </span>pendule-furuta-01<span class="w"> </span>--tags<span class="w"> </span>bootstrap
 </code></pre></div>
-<p>Cette phase :</p>
-<ul>
-<li>configure le système (hostname, utilisateur <code>pendule</code>) ;</li>
-<li>compile et installe Lely CANopen depuis les sources ;</li>
-<li>clone (via la clé de déploiement) et compile <code>pendule-furuta-core</code> ;</li>
-<li>active le lien CAN (contrôleur MCP2515 sur SPI, bitrate 500 kbit/s) ;</li>
-<li>installe les services systemd de l'application (voir <a href="../architecture/">Application</a>).</li>
-</ul>
-<p>En fin d'exécution, le playbook affiche l'adresse MAC de l'interface <code>wlan0</code>, à noter pour la phase suivante (enregistrement auprès du réseau Wi-Fi).</p>
+<p>En fin d'exécution, le playbook affiche l'adresse MAC de l'interface <code>wlan0</code>, à noter pour la phase suivante.</p>
 <h3 id="phase-2-wi-fi">Phase 2 — Wi-Fi</h3>
+<p>Configure le réseau Wi-Fi du Raspberry Pi : active la radio, crée et active le profil de connexion, <strong>désactive le mode économie d'énergie du Wi-Fi</strong> (afin d'éviter les coupures et l'instabilité de la connexion) et active la persistance de session (<code>linger</code>) pour l'utilisateur <code>pendule</code>.</p>
 <p>Avant de lancer cette phase, éditer <code>ansible/host_vars/pendule-furuta-01.yml</code> pour renseigner <code>wifi_ssid</code> et <code>wifi_psk</code> :</p>
 <div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>ansible-playbook<span class="w"> </span>-i<span class="w"> </span>ansible/inventory/hosts.yml<span class="w"> </span>ansible/site.yml<span class="w"> </span>--limit<span class="w"> </span>pendule-furuta-01<span class="w"> </span>--tags<span class="w"> </span>wifi
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Cette phase doit aboutir avec succès avant de poursuivre. La phase d'installation compile Lely CANopen et clone/compile <code>pendule-furuta-core</code>, ce qui nécessite un accès internet stable. Le réseau partagé par Windows via l'Ethernet est trop instable pour ces opérations : le Raspberry Pi doit basculer sur sa propre connexion Wi-Fi (avec le mode économie d'énergie désactivé) avant de lancer la phase 3. Vérifier que le Wi-Fi est bien connecté et fonctionnel avant de continuer.</p>
+</div>
+<h3 id="phase-3-installation">Phase 3 — Installation</h3>
+<p>Compile et installe Lely CANopen depuis les sources, clone (via la clé de déploiement, avec relance automatique en cas d'échec) et compile <code>pendule-furuta-core</code>, active l'I2C et configure l'accès au bus (utilisé par l'écran OLED du display), configure le lien CAN (contrôleur MCP2515 sur SPI, bitrate 500 kbit/s), et installe les services systemd de l'application (voir <a href="../architecture/">Application</a>).</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>ansible-playbook<span class="w"> </span>-i<span class="w"> </span>ansible/inventory/hosts.yml<span class="w"> </span>ansible/site.yml<span class="w"> </span>--limit<span class="w"> </span>pendule-furuta-01<span class="w"> </span>--tags<span class="w"> </span>installation
 </code></pre></div>
 <h2 id="4-configuration-du-drive-elmo">4. Configuration du drive ELMO</h2>
 <p>Le drive doit ensuite être paramétré avec le fichier <code>elmo driver/pendule-furuta.gprm</code> du dépôt : voir la page <a href="../drive_elmo/">Paramétrisation du drive ELMO</a>.</p>

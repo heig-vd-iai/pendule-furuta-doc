@@ -680,6 +680,7 @@
 <li>Ouvrir le logiciel EASII et se connecter en <strong>RS232</strong> sur le port COM correspondant (baudrate <code>115200</code>, parité <code>none</code>).</li>
 <li>Dans la barre d'outils <em>Parameters</em>, cliquer sur <strong>Textual</strong> (<em>Download Textual Parameters file to drive</em>).</li>
 <li>Sélectionner le fichier <code>elmo driver/pendule-furuta.gprm</code> et valider.</li>
+<li>Charger le programme de lecture de la vitesse sur le drive : menu <strong>Drive programming</strong>, puis sélectionner le fichier <a href="https://github.com/heig-vd-iai/pendule-furuta-installation/blob/main/elmo%20driver/furuta.ehl"><code>furuta.ehl</code></a> et valider.</li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -698,7 +699,7 @@
 <li>etc, etc,  ...</li>
 </ul>
 <p>Le régulateur de courant peut être déterminé en mode "auto-tuning". Les paramètres du régulateur de courant trouvé expérimentalement sont à peu près ....</p>
-<p>Un petit code embarqué sur le drive copie en permanence la vitesse du pendule FV[2] sur UI[1] qui est mappé en PDO.  .....  #@AUTOEXEC  ....</p>
+<p>Le programme <code>furuta.ehl</code> chargé à l'étape 5 copie en permanence la vitesse du pendule <code>FV[2]</code> sur <code>UI[1]</code>, qui est mappé en PDO. Il est marqué <code>#@AUTOEXEC</code> : il démarre donc automatiquement à la mise sous tension du drive, une fois chargé.</p>
 
 
 
