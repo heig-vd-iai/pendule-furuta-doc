@@ -568,12 +568,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Interface Python (pendule-furuta-interface)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#couple-pilote-en-direct-set_torque" class="md-nav__link">
+    <span class="md-ellipsis">
+      Couple piloté en direct (set_torque)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gains-lqr-reglables-a-chaud-set_gains-get_gains" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gains LQR réglables à chaud (set_gains / get_gains)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
   <a href="#acquisition-de-donnees" class="md-nav__link">
     <span class="md-ellipsis">
       Acquisition de données
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ecran-oled-et-boutons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Écran OLED et boutons
     </span>
   </a>
   
@@ -772,12 +805,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Interface Python (pendule-furuta-interface)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#couple-pilote-en-direct-set_torque" class="md-nav__link">
+    <span class="md-ellipsis">
+      Couple piloté en direct (set_torque)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gains-lqr-reglables-a-chaud-set_gains-get_gains" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gains LQR réglables à chaud (set_gains / get_gains)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
   <a href="#acquisition-de-donnees" class="md-nav__link">
     <span class="md-ellipsis">
       Acquisition de données
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ecran-oled-et-boutons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Écran OLED et boutons
     </span>
   </a>
   
@@ -861,12 +927,18 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 <td>vitesse du pendule</td>
 </tr>
 <tr>
+<td>drive → core</td>
+<td><code>0x6078</code></td>
+<td>courant moteur (‰ du courant nominal, converti en A)</td>
+</tr>
+<tr>
 <td>core → drive</td>
 <td><code>0x6071</code></td>
 <td>consigne de couple (Target Torque)</td>
 </tr>
 </tbody>
 </table>
+<p>Le courant moteur (<code>0x6078</code>) est publié par un TPDO dédié : il est lu à chaque SYNC (converti en ampères à partir du courant nominal <code>0x6075</code> du drive) et enregistré dans les acquisitions. Il donne une image directe du couple réellement appliqué.</p>
 <p>Le drive est configuré en mode <em>Profile Torque</em> au démarrage. En mode <code>IDLE</code>, l'étage de puissance est coupé (moteur libre) ; il n'est activé (<em>Operation Enabled</em>) qu'à l'entrée dans un mode actif.</p>
 <p>Pour garantir un comportement proche du temps réel, le service systemd lance l'application avec une priorité FIFO élevée sur un cœur CPU dédié :</p>
 <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>chrt<span class="w"> </span>-f<span class="w"> </span><span class="m">90</span><span class="w"> </span>taskset<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span>./furuta_core
@@ -943,8 +1015,49 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 <td>float</td>
 <td>vitesse du pendule (rad/s)</td>
 </tr>
+<tr>
+<td>36</td>
+<td><code>torqueSeq</code></td>
+<td>uint32</td>
+<td>compteur de consigne de couple direct (deadman)</td>
+</tr>
+<tr>
+<td>40</td>
+<td><code>commandedTorque</code></td>
+<td>float</td>
+<td>consigne de couple direct (Nm), mode <code>TORQUE_CONTROL</code></td>
+</tr>
+<tr>
+<td>44</td>
+<td><code>gainsSeq</code></td>
+<td>uint32</td>
+<td>compteur de mise à jour des gains LQR</td>
+</tr>
+<tr>
+<td>48</td>
+<td><code>kDown[4]</code></td>
+<td>float×4</td>
+<td>gains LQR de la régulation basse</td>
+</tr>
+<tr>
+<td>64</td>
+<td><code>kUp[4]</code></td>
+<td>float×4</td>
+<td>gains LQR de la régulation haute</td>
+</tr>
+<tr>
+<td>80</td>
+<td><code>kIdent[4]</code></td>
+<td>float×4</td>
+<td>gains LQR de l'identification</td>
+</tr>
 </tbody>
 </table>
+<p>Deux échanges se font <strong>hors</strong> protocole seq/ack, par simple compteur incrémenté après écriture :</p>
+<ul>
+<li><strong>consigne de couple direct</strong> (<code>commandedTorque</code> / <code>torqueSeq</code>) : utilisée en mode <code>TORQUE_CONTROL</code>, l'interface l'écrit puis incrémente <code>torqueSeq</code>. Le core applique un <em>deadman</em> : sans rafraîchissement pendant ~50 ms, le couple retombe à zéro (protection contre un arrêt de l'interface) ;</li>
+<li><strong>gains LQR réglables</strong> (<code>kDown</code> / <code>kUp</code> / <code>kIdent</code> + <code>gainsSeq</code>) : l'interface pose les 12 flottants puis incrémente <code>gainsSeq</code> ; le core ne recopie les trois vecteurs qu'à ce moment-là, en bloc (mise à jour atomique). Les gains par défaut sont publiés par le core au démarrage.</li>
+</ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Le mode publié par le core peut différer du mode commandé : le core change de mode de lui-même, par exemple <code>SWING_UP</code> → <code>REGULATION_UP</code> une fois le pendule capturé en haut, ou passage en <code>IDLE</code> en cas de chute.</p>
@@ -964,8 +1077,20 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 <span class="nb">print</span><span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">pendulum_velocity</span><span class="p">)</span>    <span class="c1"># vitesse du pendule (rad/s)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">current_mode</span><span class="p">)</span>         <span class="c1"># mode courant du core</span>
 </code></pre></div>
-<p>Les modes disponibles (<code>Mode</code>) sont : <code>IDLE</code>, <code>REGULATION_DOWN</code>, <code>REGULATION_UP</code>, <code>IDENTIFICATION</code>, <code>SWING_UP</code> (voir la page <a href="../../r%C3%A9gulation/regulation/">Régulation</a>).</p>
+<p>Les modes disponibles (<code>Mode</code>) sont : <code>IDLE</code>, <code>REGULATION_DOWN</code>, <code>REGULATION_UP</code>, <code>IDENTIFICATION</code>, <code>SWING_UP</code>, <code>TORQUE_CONTROL</code> (voir la page <a href="../../r%C3%A9gulation/regulation/">Régulation</a>).</p>
 <p>Les méthodes <code>set_mode</code> et <code>start_acquisition</code> retournent <code>True</code> si le core a acquitté la commande dans le délai imparti (1 s par défaut).</p>
+<h3 id="couple-pilote-en-direct-set_torque">Couple piloté en direct (<code>set_torque</code>)</h3>
+<p>En mode <code>TORQUE_CONTROL</code>, l'interface impose directement la consigne de couple, sans passer par le protocole seq/ack :</p>
+<div class="highlight"><pre><span></span><code><span class="n">pendulum</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">Mode</span><span class="o">.</span><span class="n">TORQUE_CONTROL</span><span class="p">)</span>
+<span class="n">pendulum</span><span class="o">.</span><span class="n">set_torque</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>   <span class="c1"># couple en Nm, à rafraîchir régulièrement</span>
+</code></pre></div>
+<p><code>set_torque</code> doit être rappelée régulièrement : le core applique un <em>deadman</em> (~50 ms) qui ramène le couple à zéro si la consigne n'est plus rafraîchie. La consigne est saturée côté core (±0.32 Nm), et des coupures de sécurité ramènent en <code>IDLE</code> en cas de survitesse du bras ou du pendule.</p>
+<h3 id="gains-lqr-reglables-a-chaud-set_gains-get_gains">Gains LQR réglables à chaud (<code>set_gains</code> / <code>get_gains</code>)</h3>
+<p>Les gains des retours d'état LQR (régulations basse, haute et identification) peuvent être modifiés en cours de fonctionnement, sans recompiler ni redémarrer le core :</p>
+<div class="highlight"><pre><span></span><code><span class="n">gains</span> <span class="o">=</span> <span class="n">pendulum</span><span class="o">.</span><span class="n">get_gains</span><span class="p">()</span>          <span class="c1"># {&quot;down&quot;: [...], &quot;up&quot;: [...], &quot;ident&quot;: [...]}</span>
+<span class="n">pendulum</span><span class="o">.</span><span class="n">set_gains</span><span class="p">(</span><span class="n">up</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.78</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.018</span><span class="p">,</span> <span class="mf">0.033</span><span class="p">])</span>   <span class="c1"># ne change que le vecteur &quot;up&quot;</span>
+</code></pre></div>
+<p>Chaque vecteur contient 4 valeurs <code>[position bras, angle pendule, vitesse bras, vitesse pendule]</code>. Passer <code>None</code> (valeur par défaut) laisse un vecteur inchangé. L'écriture est atomique : le core relit les trois vecteurs en bloc lorsqu'il détecte le changement. <code>get_gains</code> renvoie les gains effectivement appliqués par le core.</p>
 <h2 id="acquisition-de-donnees">Acquisition de données</h2>
 <p>Sur demande de l'interface (<code>start_acquisition(n)</code>), le core enregistre <code>n</code> échantillons — un par SYNC, soit toutes les 2 ms — dans un fichier HDF5 horodaté (<code>acquisition_YYYYMMDD_HHMMSS.h5</code>). Le fichier est écrit localement puis déplacé dans <code>/home/pendule/workspace/data/</code>, où il est accessible depuis les notebooks Jupyter.</p>
 <p>Chaque enregistrement contient :</p>
@@ -973,9 +1098,17 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 <li>les horodatages (µs) de la dernière mise à jour de chaque mesure,</li>
 <li>un compteur de séquence et le node CANopen,</li>
 <li><code>position</code>, <code>pendulumPosition</code>, <code>velocity</code>, <code>pendulumVelocity</code>,</li>
-<li>le couple commandé <code>torque</code>.</li>
+<li>le couple commandé <code>torque</code> et la part d'excitation <code>excitation</code>,</li>
+<li>le courant moteur mesuré <code>current</code> (A).</li>
 </ul>
 <p>En mode <code>IDENTIFICATION</code>, la demande d'acquisition déclenche en plus le signal d'excitation chargé depuis <code>/home/pendule/workspace/excitation.h5</code> (dataset <code>signal</code>, attribut <code>fs</code>) ; l'acquisition dure alors exactement la longueur du signal et le fichier est nommé <code>identification_YYYYMMDD_HHMMSS.h5</code>.</p>
+<h2 id="ecran-oled-et-boutons">Écran OLED et boutons</h2>
+<p>L'application display (<code>furuta-display.service</code>) permet d'utiliser la maquette sans PC, via l'écran OLED et les quatre boutons (<code>s1</code> = haut, <code>s2</code> = bas, <code>s3</code> = valider, <code>s4</code> = retour). Elle s'appuie sur la même bibliothèque <code>pendule-furuta-interface</code> que les notebooks. La navigation est organisée en une machine d'états :</p>
+<ul>
+<li><strong>Menu principal</strong> : <code>Mode</code>, <code>Debug</code>, <code>Paramètres</code>, <code>À propos</code>.</li>
+<li><strong>Menu Mode</strong> : sélection de <code>Up</code>, <code>Down</code> ou <code>Swing up</code>, qui envoie le mode correspondant au core, puis affiche l'écran d'exécution. On en sort par un bouton (retour en <code>IDLE</code>) ou automatiquement si le core repasse en <code>IDLE</code> (ex. chute du pendule).</li>
+<li><strong>Écran Debug</strong> : affiche en continu les valeurs des capteurs — angles bras/pendule (<code>a1</code>/<code>a2</code>) et vitesses (<code>v1</code>/<code>v2</code>) — ainsi que le mode courant. Sortie par <code>s4</code>.</li>
+</ul>
 
 
 
