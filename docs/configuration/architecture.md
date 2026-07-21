@@ -39,7 +39,10 @@ Les objets échangés par PDO sont :
 | drive → core | `0x606C` | vitesse du bras |
 | drive → core | `0x20A0` | position du pendule |
 | drive → core | `0x2F00:01` | vitesse du pendule |
+| drive → core | `0x6078` | courant moteur (‰ du courant nominal, converti en A) |
 | core → drive | `0x6071` | consigne de couple (Target Torque) |
+
+Le courant moteur (`0x6078`) est publié par un TPDO dédié : il est lu à chaque SYNC (converti en ampères à partir du courant nominal `0x6075` du drive) et enregistré dans les acquisitions. Il donne une image directe du couple réellement appliqué.
 
 Le drive est configuré en mode *Profile Torque* au démarrage. En mode `IDLE`, l'étage de puissance est coupé (moteur libre) ; il n'est activé (*Operation Enabled*) qu'à l'entrée dans un mode actif.
 
@@ -70,6 +73,17 @@ La structure `Communication::SharedData` (`src/communication.hpp`) définit la d
 | 24 | `pendulumPosition` | float | angle du pendule (rad), 0 = en bas |
 | 28 | `velocity` | float | vitesse du bras (rad/s) |
 | 32 | `pendulumVelocity` | float | vitesse du pendule (rad/s) |
+| 36 | `torqueSeq` | uint32 | compteur de consigne de couple direct (deadman) |
+| 40 | `commandedTorque` | float | consigne de couple direct (Nm), mode `TORQUE_CONTROL` |
+| 44 | `gainsSeq` | uint32 | compteur de mise à jour des gains LQR |
+| 48 | `kDown[4]` | float×4 | gains LQR de la régulation basse |
+| 64 | `kUp[4]` | float×4 | gains LQR de la régulation haute |
+| 80 | `kIdent[4]` | float×4 | gains LQR de l'identification |
+
+Deux échanges se font **hors** protocole seq/ack, par simple compteur incrémenté après écriture :
+
+- **consigne de couple direct** (`commandedTorque` / `torqueSeq`) : utilisée en mode `TORQUE_CONTROL`, l'interface l'écrit puis incrémente `torqueSeq`. Le core applique un *deadman* : sans rafraîchissement pendant ~50 ms, le couple retombe à zéro (protection contre un arrêt de l'interface) ;
+- **gains LQR réglables** (`kDown` / `kUp` / `kIdent` + `gainsSeq`) : l'interface pose les 12 flottants puis incrémente `gainsSeq` ; le core ne recopie les trois vecteurs qu'à ce moment-là, en bloc (mise à jour atomique). Les gains par défaut sont publiés par le core au démarrage.
 
 !!! warning
     Le mode publié par le core peut différer du mode commandé : le core change de mode de lui-même, par exemple `SWING_UP` → `REGULATION_UP` une fois le pendule capturé en haut, ou passage en `IDLE` en cas de chute.
@@ -93,9 +107,31 @@ print(pendulum.pendulum_velocity)    # vitesse du pendule (rad/s)
 print(pendulum.current_mode)         # mode courant du core
 ```
 
-Les modes disponibles (`Mode`) sont : `IDLE`, `REGULATION_DOWN`, `REGULATION_UP`, `IDENTIFICATION`, `SWING_UP` (voir la page [Régulation](../régulation/regulation.md)).
+Les modes disponibles (`Mode`) sont : `IDLE`, `REGULATION_DOWN`, `REGULATION_UP`, `IDENTIFICATION`, `SWING_UP`, `TORQUE_CONTROL` (voir la page [Régulation](../régulation/regulation.md)).
 
 Les méthodes `set_mode` et `start_acquisition` retournent `True` si le core a acquitté la commande dans le délai imparti (1 s par défaut).
+
+### Couple piloté en direct (`set_torque`)
+
+En mode `TORQUE_CONTROL`, l'interface impose directement la consigne de couple, sans passer par le protocole seq/ack :
+
+```python
+pendulum.set_mode(Mode.TORQUE_CONTROL)
+pendulum.set_torque(0.1)   # couple en Nm, à rafraîchir régulièrement
+```
+
+`set_torque` doit être rappelée régulièrement : le core applique un *deadman* (~50 ms) qui ramène le couple à zéro si la consigne n'est plus rafraîchie. La consigne est saturée côté core (±0.32 Nm), et des coupures de sécurité ramènent en `IDLE` en cas de survitesse du bras ou du pendule.
+
+### Gains LQR réglables à chaud (`set_gains` / `get_gains`)
+
+Les gains des retours d'état LQR (régulations basse, haute et identification) peuvent être modifiés en cours de fonctionnement, sans recompiler ni redémarrer le core :
+
+```python
+gains = pendulum.get_gains()          # {"down": [...], "up": [...], "ident": [...]}
+pendulum.set_gains(up=[-0.03, 0.78, -0.018, 0.033])   # ne change que le vecteur "up"
+```
+
+Chaque vecteur contient 4 valeurs `[position bras, angle pendule, vitesse bras, vitesse pendule]`. Passer `None` (valeur par défaut) laisse un vecteur inchangé. L'écriture est atomique : le core relit les trois vecteurs en bloc lorsqu'il détecte le changement. `get_gains` renvoie les gains effectivement appliqués par le core.
 
 ## Acquisition de données
 
@@ -106,6 +142,15 @@ Chaque enregistrement contient :
 - les horodatages (µs) de la dernière mise à jour de chaque mesure,
 - un compteur de séquence et le node CANopen,
 - `position`, `pendulumPosition`, `velocity`, `pendulumVelocity`,
-- le couple commandé `torque`.
+- le couple commandé `torque` et la part d'excitation `excitation`,
+- le courant moteur mesuré `current` (A).
 
 En mode `IDENTIFICATION`, la demande d'acquisition déclenche en plus le signal d'excitation chargé depuis `/home/pendule/workspace/excitation.h5` (dataset `signal`, attribut `fs`) ; l'acquisition dure alors exactement la longueur du signal et le fichier est nommé `identification_YYYYMMDD_HHMMSS.h5`.
+
+## Écran OLED et boutons
+
+L'application display (`furuta-display.service`) permet d'utiliser la maquette sans PC, via l'écran OLED et les quatre boutons (`s1` = haut, `s2` = bas, `s3` = valider, `s4` = retour). Elle s'appuie sur la même bibliothèque `pendule-furuta-interface` que les notebooks. La navigation est organisée en une machine d'états :
+
+- **Menu principal** : `Mode`, `Debug`, `Paramètres`, `À propos`.
+- **Menu Mode** : sélection de `Up`, `Down` ou `Swing up`, qui envoie le mode correspondant au core, puis affiche l'écran d'exécution. On en sort par un bouton (retour en `IDLE`) ou automatiquement si le core repasse en `IDLE` (ex. chute du pendule).
+- **Écran Debug** : affiche en continu les valeurs des capteurs — angles bras/pendule (`a1`/`a2`) et vitesses (`v1`/`v2`) — ainsi que le mode courant. Sortie par `s4`.

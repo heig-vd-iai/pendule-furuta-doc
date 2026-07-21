@@ -18,7 +18,7 @@ Les étudiants n'interviennent pas dans le code C++ : ils pilotent le pendule de
 
 ## Modes de fonctionnement
 
-Le core implémente cinq modes, sélectionnables depuis l'interface Python ou l'écran de la maquette :
+Le core implémente six modes, sélectionnables depuis l'interface Python ou l'écran de la maquette :
 
 | Mode | Description |
 | --- | --- |
@@ -27,12 +27,15 @@ Le core implémente cinq modes, sélectionnables depuis l'interface Python ou l'
 | `REGULATION_UP` | Retour d'état LQR autour de la position d'équilibre haute (pendule inversé). |
 | `SWING_UP` | Séquence de lancement puis loi de commande en énergie pour amener le pendule en haut. |
 | `IDENTIFICATION` | Régulation LQR en haut avec superposition d'un signal d'excitation, mesures enregistrées en HDF5. |
+| `TORQUE_CONTROL` | Couple piloté directement depuis l'interface (aucune régulation), avec deadman et coupures de sécurité. |
 
 Dans les modes de régulation, la loi de commande est un retour d'état complet
 
 $$u = -k_1\,\theta_1 - k_2\,\theta_2 - k_3\,\dot{\theta}_1 - k_4\,\dot{\theta}_2$$
 
-avec un jeu de gains LQR propre à chaque mode et une saturation du couple par mode (0.4 à 0.6 Nm). Le zéro de l'angle du bras $\theta_1$ est recalé à chaque changement de mode.
+avec un jeu de gains LQR propre à chaque mode et une saturation du couple par mode (0.4 à 0.6 Nm). Le zéro de l'angle du bras $\theta_1$ est recalé à chaque changement de mode. Les gains de chaque mode sont réglables à chaud depuis l'interface Python (`set_gains` / `get_gains`), sans recompilation ni redémarrage du core — voir la page [Application](../configuration/architecture.md).
+
+Le mode `TORQUE_CONTROL` court-circuite la régulation : l'interface impose directement la consigne de couple (`set_torque`), à rafraîchir régulièrement. Un *deadman* (~50 ms) ramène le couple à zéro si la consigne n'est plus rafraîchie, la consigne est saturée (±0.32 Nm) et une survitesse du bras ou du pendule provoque un retour automatique en `IDLE`. Ce mode est utile pour tester des lois de commande écrites côté Python ou pour des essais en boucle ouverte.
 
 Le mode `SWING_UP` enchaîne les phases suivantes :
 
