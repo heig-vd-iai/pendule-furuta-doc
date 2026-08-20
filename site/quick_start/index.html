@@ -808,6 +808,28 @@
 <li>Pour se connecter à un des pendule de Furuta il faut être connecté à la bulle de l'iAi via le VPN <a href="https://vpn.heig-vd.ch">Global Protect</a> sur le portails <code>all-access.heig-vd.ch</code>.</li>
 <li>Ensuite le pendule est disponible en ssh à l'adresse <code>pendule@pendule-furuta-N.iai-heig-vd.in</code> ou N est le numéro du pendule de 01 à 14.</li>
 </ul>
+<p>Pour se connecter depuis vscode :</p>
+<ol>
+<li>
+<p>ouvrire un fenêtre distante. </p>
+<p><img alt="" src="../assets/images/remote_window.png" /></p>
+</li>
+<li>
+<p>choisir "Remote-SSH: Connect to Host..." </p>
+<p><img alt="" src="../assets/images/remote_host.png" /></p>
+</li>
+<li>
+<p>entrer l'adresse du pendule (ex: <code>pendule@pendule-furuta-N.iai-heig-vd.ch</code>) </p>
+<p><img alt="" src="../assets/images/remote_ssh.png" /></p>
+</li>
+<li>
+<p>pour la première connexion, sélectionner Linux, accepter la clé et entrer le mot de passe.</p>
+</li>
+</ol>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>L'host peux aussi être ajouté de manière permanente en sélectionnant <code>add new SSH host...</code> à l'étape 3. Il sera alors possible de se connecter directement depuis la liste des hôtes.</p>
+</div>
 <h2 id="workspace">Workspace</h2>
 <ul>
 <li>Le dossier de travail est situé dans le répertoire <code>/home/pendule/workspace</code>.</li>
