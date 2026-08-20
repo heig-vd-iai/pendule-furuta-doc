@@ -63,7 +63,7 @@ uv run ansible-playbook -i ansible/inventory/hosts.yml ansible/site.yml --limit 
 
 ### Phase 3 — Installation
 
-Compile et installe Lely CANopen depuis les sources, clone (via la clé de déploiement, avec relance automatique en cas d'échec) et compile `pendule-furuta-core`, active l'I2C et configure l'accès au bus (utilisé par l'écran OLED du display), configure le lien CAN (contrôleur MCP2515 sur SPI, bitrate 500 kbit/s), et installe les services systemd de l'application (voir [Application](architecture.md)).
+Compile et installe Lely CANopen depuis les sources, clone (via la clé de déploiement, avec relance automatique en cas d'échec) et compile `pendule-furuta-core`, active l'I2C et configure l'accès au bus (utilisé par l'écran OLED du display), configure le lien CAN (contrôleur MCP2515 sur SPI, bitrate 500 kbit/s), et installe les services systemd de l'application (voir [Application](/architecture.md)).
 
 ```bash
 uv run ansible-playbook -i ansible/inventory/hosts.yml ansible/site.yml --limit pendule-furuta-01 --tags installation

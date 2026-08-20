@@ -14,7 +14,7 @@ La régulation du pendule s'effectue sur la RPI5 dans l'application `furuta_core
 
 L'horloge de la régulation provient du bus CANopen : la RPI5, master CANopen, émet un message SYNC toutes les 2 ms. Le drive ELMO publie ses mesures (positions et vitesses des deux codeurs) par PDO synchrones, et le core calcule à chaque SYNC le couple à appliquer, soit à une cadence de 500 Hz — très élevée par rapport à la dynamique de la maquette. La consigne de couple est renvoyée au drive par PDO.
 
-Les étudiants n'interviennent pas dans le code C++ : ils pilotent le pendule depuis Python (notebooks Jupyter) via la bibliothèque `pendule-furuta-interface`, qui permet de changer de mode et de déclencher des acquisitions de mesures au format HDF5 (voir la page [Application](../configuration/architecture.md)).
+Les étudiants n'interviennent pas dans le code C++ : ils pilotent le pendule depuis Python (notebooks Jupyter) via la bibliothèque `pendule-furuta-interface`, qui permet de changer de mode et de déclencher des acquisitions de mesures au format HDF5 (voir la page [Application](../architecture.md)).
 
 ## Modes de fonctionnement
 
@@ -33,7 +33,7 @@ Dans les modes de régulation, la loi de commande est un retour d'état complet
 
 $$u = -k_1\,\theta_1 - k_2\,\theta_2 - k_3\,\dot{\theta}_1 - k_4\,\dot{\theta}_2$$
 
-avec un jeu de gains LQR propre à chaque mode et une saturation du couple par mode (0.4 à 0.6 Nm). Le zéro de l'angle du bras $\theta_1$ est recalé à chaque changement de mode. Les gains de chaque mode sont réglables à chaud depuis l'interface Python (`set_gains` / `get_gains`), sans recompilation ni redémarrage du core — voir la page [Application](../configuration/architecture.md).
+avec un jeu de gains LQR propre à chaque mode et une saturation du couple par mode (0.4 à 0.6 Nm). Le zéro de l'angle du bras $\theta_1$ est recalé à chaque changement de mode. Les gains de chaque mode sont réglables à chaud depuis l'interface Python (`set_gains` / `get_gains`), sans recompilation ni redémarrage du core — voir la page [Application](../architecture.md).
 
 Le mode `TORQUE_CONTROL` court-circuite la régulation : l'interface impose directement la consigne de couple (`set_torque`), à rafraîchir régulièrement. Un *deadman* (~50 ms) ramène le couple à zéro si la consigne n'est plus rafraîchie, la consigne est saturée (±0.32 Nm) et une survitesse du bras ou du pendule provoque un retour automatique en `IDLE`. Ce mode est utile pour tester des lois de commande écrites côté Python ou pour des essais en boucle ouverte.
 

@@ -107,7 +107,7 @@ print(pendulum.pendulum_velocity)    # vitesse du pendule (rad/s)
 print(pendulum.current_mode)         # mode courant du core
 ```
 
-Les modes disponibles (`Mode`) sont : `IDLE`, `REGULATION_DOWN`, `REGULATION_UP`, `IDENTIFICATION`, `SWING_UP`, `TORQUE_CONTROL` (voir la page [Régulation](../régulation/regulation.md)).
+Les modes disponibles (`Mode`) sont : `IDLE`, `REGULATION_DOWN`, `REGULATION_UP`, `IDENTIFICATION`, `SWING_UP`, `TORQUE_CONTROL` (voir la page [Régulation](/régulation/regulation.md)).
 
 Les méthodes `set_mode` et `start_acquisition` retournent `True` si le core a acquitté la commande dans le délai imparti (1 s par défaut).
 
