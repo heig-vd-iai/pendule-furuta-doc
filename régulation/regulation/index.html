@@ -236,6 +236,44 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="../../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Application
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../quick_start/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Démarrage rapide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
     
     
       <li class="md-tabs__item">
@@ -259,7 +297,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../configuration/architecture/" class="md-tabs__link">
+        <a href="../../configuration/drive_elmo/" class="md-tabs__link">
           
   
   
@@ -365,6 +403,50 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Application
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quick_start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Démarrage rapide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -377,10 +459,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -393,8 +475,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Conception
           </label>
@@ -448,10 +530,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -464,35 +546,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Configuration
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../configuration/architecture/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Application
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -570,10 +629,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -586,8 +645,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Régulation
           </label>
@@ -844,7 +903,7 @@
 <h2 id="logiciel-de-regulation">Logiciel de régulation</h2>
 <p>La régulation du pendule s'effectue sur la RPI5 dans l'application <code>furuta_core</code>, écrite en C++ (dépôt <a href="https://github.com/heig-vd-iai/pendule-furuta-core">pendule-furuta-core</a>). Une première version en Python avait montré ses limites (jitter de la période d'échantillonnage élevé, coups d'horloge ratés) ; le passage en C++, combiné à une priorité temps réel FIFO et à un cœur CPU dédié (<code>chrt -f 90 taskset -c 3</code>), permet un comportement proche du temps réel dur.</p>
 <p>L'horloge de la régulation provient du bus CANopen : la RPI5, master CANopen, émet un message SYNC toutes les 2 ms. Le drive ELMO publie ses mesures (positions et vitesses des deux codeurs) par PDO synchrones, et le core calcule à chaque SYNC le couple à appliquer, soit à une cadence de 500 Hz — très élevée par rapport à la dynamique de la maquette. La consigne de couple est renvoyée au drive par PDO.</p>
-<p>Les étudiants n'interviennent pas dans le code C++ : ils pilotent le pendule depuis Python (notebooks Jupyter) via la bibliothèque <code>pendule-furuta-interface</code>, qui permet de changer de mode et de déclencher des acquisitions de mesures au format HDF5 (voir la page <a href="../../configuration/architecture/">Application</a>).</p>
+<p>Les étudiants n'interviennent pas dans le code C++ : ils pilotent le pendule depuis Python (notebooks Jupyter) via la bibliothèque <code>pendule-furuta-interface</code>, qui permet de changer de mode et de déclencher des acquisitions de mesures au format HDF5 (voir la page <a href="../../architecture/">Application</a>).</p>
 <h2 id="modes-de-fonctionnement">Modes de fonctionnement</h2>
 <p>Le core implémente six modes, sélectionnables depuis l'interface Python ou l'écran de la maquette :</p>
 <table>
@@ -883,7 +942,7 @@
 </table>
 <p>Dans les modes de régulation, la loi de commande est un retour d'état complet</p>
 <div class="arithmatex">\[u = -k_1\,\theta_1 - k_2\,\theta_2 - k_3\,\dot{\theta}_1 - k_4\,\dot{\theta}_2\]</div>
-<p>avec un jeu de gains LQR propre à chaque mode et une saturation du couple par mode (0.4 à 0.6 Nm). Le zéro de l'angle du bras <span class="arithmatex">\(\theta_1\)</span> est recalé à chaque changement de mode. Les gains de chaque mode sont réglables à chaud depuis l'interface Python (<code>set_gains</code> / <code>get_gains</code>), sans recompilation ni redémarrage du core — voir la page <a href="../../configuration/architecture/">Application</a>.</p>
+<p>avec un jeu de gains LQR propre à chaque mode et une saturation du couple par mode (0.4 à 0.6 Nm). Le zéro de l'angle du bras <span class="arithmatex">\(\theta_1\)</span> est recalé à chaque changement de mode. Les gains de chaque mode sont réglables à chaud depuis l'interface Python (<code>set_gains</code> / <code>get_gains</code>), sans recompilation ni redémarrage du core — voir la page <a href="../../architecture/">Application</a>.</p>
 <p>Le mode <code>TORQUE_CONTROL</code> court-circuite la régulation : l'interface impose directement la consigne de couple (<code>set_torque</code>), à rafraîchir régulièrement. Un <em>deadman</em> (~50 ms) ramène le couple à zéro si la consigne n'est plus rafraîchie, la consigne est saturée (±0.32 Nm) et une survitesse du bras ou du pendule provoque un retour automatique en <code>IDLE</code>. Ce mode est utile pour tester des lois de commande écrites côté Python ou pour des essais en boucle ouverte.</p>
 <p>Le mode <code>SWING_UP</code> enchaîne les phases suivantes :</p>
 <ol>
